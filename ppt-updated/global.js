@@ -190,7 +190,7 @@ function buildPresentation(config) {
 
 
   function trackPresentationView(config) {
-  fetch("https://digi-ppt.digilateral.com/api/url/track-view", {
+  fetch("/api/url/track-view", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
