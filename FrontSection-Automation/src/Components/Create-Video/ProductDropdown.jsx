@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const API_BASE_URL = "https://digi-ppt.digilateral.com/api";
+const API_BASE_URL = "/api";
 
 const ProductDropdown = ({ value, onChange }) => {
   const [products, setProducts] = useState([]);
