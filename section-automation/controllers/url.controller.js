@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const slugify = require("../utils/slugify");
-const { copyDir } = require("../utils/file.utils");
 const { updateHtml } = require("../services/html.service");
 const { updateJs } = require("../services/js.service");
 const { writeLocationBlock, reloadNginx } = require("../utils/nginx.utils");
@@ -174,10 +173,41 @@ exports.generateUrl = async (req, res) => {
     console.log("Company:", companyName);
     console.log("Section:", section);
 
-    // 1. Fresh, isolated copy of the master presentation for THIS link only.
-    copyDir(TEMPLATE_DIR, targetDir);
+    // ---------------------------------------------------------
+    // PRESENTATION STORAGE
+    // ---------------------------------------------------------
+    // New presentations contain ONLY index.html.
+    // All CSS/JS/images/videos are served from /ppt-updated/.
+    //
+    // Existing presentations that already contain global.js are
+    // legacy self-contained copies and are intentionally untouched.
+    // ---------------------------------------------------------
+    const htmlPath = path.join(targetDir, "index.html");
+    const legacyPresentation =
+      fs.existsSync(htmlPath) &&
+      fs.existsSync(path.join(targetDir, "global.js"));
 
-    // 2. Bake the chosen section into that copy (does not touch other links).
+    if (!fs.existsSync(htmlPath)) {
+      fs.mkdirSync(targetDir, { recursive: true });
+
+      fs.copyFileSync(
+        path.join(TEMPLATE_DIR, "index.html"),
+        htmlPath,
+      );
+
+      console.log(
+        "Created lightweight shared-asset presentation:",
+        targetDir,
+      );
+    } else {
+      console.log(
+        legacyPresentation
+          ? "Existing legacy presentation detected; keeping its assets."
+          : "Existing shared-asset presentation detected.",
+      );
+    }
+
+    // Bake only this presentation's configuration into index.html.
     updateHtml(
       selectedSections,
       slides,
@@ -186,7 +216,9 @@ exports.generateUrl = async (req, res) => {
       divisionSlug,
       usernameSlug,
       projectSlug,
+      !legacyPresentation,
     );
+
     updateJs(selectedSections, targetDir);
 
     const existingPresentation = await Presentation.findOne({
