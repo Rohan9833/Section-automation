@@ -8,7 +8,7 @@ import ZipFileUpload from "../Components/createZip/ZipFileUpload";
 import ZipSuccessModal from "../Components/createZip/ZipSuccessModal";
 import Navbar from "../Components/Navbar";
 
-const BACKEND_BASE_URL = "https://digi-ppt.digilateral.com";
+const BACKEND_BASE_URL = "http://localhost:2405";
 
 const initialFormData = {
   companyName: "",
