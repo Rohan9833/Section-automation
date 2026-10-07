@@ -77,6 +77,16 @@ const SECTION_SLIDES = [
     label: "CalendarME",
     slideIds: [105, 106, 107],
   },
+  {
+    key: "leaflets",
+    label: "Leaflets",
+    slideIds: [108],
+  },
+  {
+    key: "comic-book",
+    label: "Comic Book",
+    slideIds: [109],
+  },
 ];
 
 const PresentationSections = ({
