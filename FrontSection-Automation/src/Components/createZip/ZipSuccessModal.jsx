@@ -3,17 +3,20 @@ import { Check, Copy, Download, X } from "lucide-react";
 
 const ZipSuccessModal = ({ result, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const backendUrl = "https://digi-ppt.digilateral.com";
+  const backendUrl = "http://localhost:2405";
 
   if (!result) {
     return null;
   }
 
   const zipLink = result.url || "";
-  const fullUrl = result.url.replace(
-    "http://localhost:2405",
-    `${backendUrl}/api`,
-  );
+  const fullUrl =
+    result.url?.startsWith("http://") ||
+    result.url?.startsWith("https://")
+      ? result.url
+      : backendUrl +
+        (result.url?.startsWith("/") ? "" : "/") +
+        (result.url || "");
   console.log("ziplink", zipLink);
   console.log("ziplisddsdng", fullUrl);
 
