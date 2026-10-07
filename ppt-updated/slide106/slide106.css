@@ -1,0 +1,14 @@
+.calendarmE-page {
+  position: absolute;
+  inset: 0;
+  width: 1024px;
+  height: 768px;
+  overflow: hidden;
+}
+
+.calendarmE-page img {
+  display: block;
+  width: 1024px;
+  height: 768px;
+  object-fit: contain;
+}
