@@ -52,6 +52,11 @@ const SECTION_SLIDES = [
     label: "Product Advertisement",
     slideIds: [100],
   },
+  {
+    key: "field-motivation",
+    label: "Field Motivation",
+    slideIds: [101],
+  },
 ];
 
 const PresentationSections = ({
