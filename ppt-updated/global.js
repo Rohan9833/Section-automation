@@ -98,6 +98,16 @@ const sections = {
     name: "CalendarME",
     slides: [105, 106, 107],
   },
+  leaflets: {
+    id: "leaflets",
+    name: "Leaflets",
+    slides: [108],
+  },
+  comicBook: {
+    id: "comicBook",
+    name: "Comic Book",
+    slides: [109],
+  },
 };
 
 function normalizeRequest(request) {
@@ -132,6 +142,8 @@ function buildPresentation(config) {
     "doc-talk-show": "docTalkShow",
     "doc-talk-quiz": "docTalkQuiz",
     "calendar-me": "calendarME",
+    leaflets: "leaflets",
+    "comic-book": "comicBook",
   };
 
   const presentation = [];
@@ -958,6 +970,20 @@ function set_pg_content(sectionName, slideId) {
       case 107:
         content =
           '<link rel="stylesheet" type="text/css" href="slide107/slide107.css" media="screen"/><div class="calendarmE-page"><img src="slide107/1.png" alt="CalendarME Page 3"></div>';
+        break;
+    }
+  } else if (sectionName === "leaflets") {
+    switch (slideId) {
+      case 108:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide108/slide108.css" media="screen"/><div class="calendarmE-page"><img src="slide108/1.png" alt="Leaflets"></div>';
+        break;
+    }
+  } else if (sectionName === "comicBook") {
+    switch (slideId) {
+      case 109:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide109/slide109.css" media="screen"/><div class="calendarmE-page"><img src="slide109/1.png" alt="Comic Book"></div>';
         break;
     }
   } else if (sectionName === "games") {
