@@ -93,6 +93,11 @@ const sections = {
     name: "DocTalkQuiz",
     slides: [104],
   },
+  calendarME: {
+    id: "calendarME",
+    name: "CalendarME",
+    slides: [105, 106, 107],
+  },
 };
 
 function normalizeRequest(request) {
@@ -126,6 +131,7 @@ function buildPresentation(config) {
     "doc-talk": "docTalk",
     "doc-talk-show": "docTalkShow",
     "doc-talk-quiz": "docTalkQuiz",
+    "calendar-me": "calendarME",
   };
 
   const presentation = [];
@@ -935,6 +941,23 @@ function set_pg_content(sectionName, slideId) {
       case 104:
         content =
           '<link rel="stylesheet" type="text/css" href="slide104/slide104.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>DocTalkQuiz</p></div><div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div><div class="title3" class="frameopen"><video src="slide104/video.mp4" width="800" height="450" controls controlslist="nodownload"></video></div>';
+        break;
+    }
+  } else if (sectionName === "calendarME") {
+    switch (slideId) {
+      case 105:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide105/slide105.css" media="screen"/><div class="calendarmE-page"><img src="slide105/1.png" alt="CalendarME Page 1"></div>';
+        break;
+
+      case 106:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide106/slide106.css" media="screen"/><div class="calendarmE-page"><img src="slide106/1.png" alt="CalendarME Page 2"></div>';
+        break;
+
+      case 107:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide107/slide107.css" media="screen"/><div class="calendarmE-page"><img src="slide107/1.png" alt="CalendarME Page 3"></div>';
         break;
     }
   } else if (sectionName === "games") {
