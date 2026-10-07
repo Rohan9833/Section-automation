@@ -67,6 +67,11 @@ const SECTION_SLIDES = [
     label: "DocTalk Show",
     slideIds: [103],
   },
+  {
+    key: "doc-talk-quiz",
+    label: "DocTalkQuiz",
+    slideIds: [104],
+  },
 ];
 
 const PresentationSections = ({
