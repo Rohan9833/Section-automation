@@ -188,23 +188,24 @@ exports.generateUrl = async (req, res) => {
       fs.existsSync(htmlPath) &&
       fs.existsSync(path.join(targetDir, "global.js"));
 
-    if (!fs.existsSync(htmlPath)) {
+    if (legacyPresentation) {
+      console.log(
+        "Existing legacy presentation detected; keeping its assets.",
+      );
+    } else {
       fs.mkdirSync(targetDir, { recursive: true });
 
+      // Refresh only the tiny index.html. Shared CSS/JS/media are never copied.
       fs.copyFileSync(
         path.join(TEMPLATE_DIR, "index.html"),
         htmlPath,
       );
 
       console.log(
-        "Created lightweight shared-asset presentation:",
+        fs.existsSync(htmlPath)
+          ? "Created/refreshed lightweight shared-asset presentation:"
+          : "Created lightweight shared-asset presentation:",
         targetDir,
-      );
-    } else {
-      console.log(
-        legacyPresentation
-          ? "Existing legacy presentation detected; keeping its assets."
-          : "Existing shared-asset presentation detected.",
       );
     }
 
