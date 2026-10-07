@@ -48,8 +48,7 @@ const pptLinkDir = path.join(
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://digi-ppt.digilateral.com",
-  "https://digilateral.com",
+  "http://127.0.0.1:5173",
 ];
 
 app.use(
