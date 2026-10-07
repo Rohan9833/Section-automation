@@ -13,8 +13,8 @@ import {
 
 import PresentationSettingsVideoModal from "./PresentationSettingsVideoModal";
 
-const BACKEND_BASE_URL = "https://digi-ppt.digilateral.com";
-const BACKEND_BASE_URL_zip = "https://digilateral.com";
+const BACKEND_BASE_URL = "http://localhost:2405";
+const BACKEND_BASE_URL_zip = "http://localhost:2405";
 
 const API_BASE_URL = `${BACKEND_BASE_URL}/api`;
 
@@ -95,9 +95,9 @@ const PresentationTable = ({ presentations = [], onSettings }) => {
       return "";
     }
 
-    const path = url.replace("https://digi-ppt.digilateral.com", "");
+    const path = url.replace(BACKEND_BASE_URL, "");
 
-    return `https://digilateral.com${path}`;
+    return `${BACKEND_BASE_URL}${path}`;
   };
 
   /* ==========================================
@@ -132,11 +132,8 @@ const PresentationTable = ({ presentations = [], onSettings }) => {
     const url = video.url.trim();
 
     // Convert digi-ppt domain to the public domain
-    if (url.startsWith("https://digi-ppt.digilateral.com")) {
-      return url.replace(
-        "https://digi-ppt.digilateral.com",
-        "https://digilateral.com",
-      );
+    if (url.startsWith(BACKEND_BASE_URL)) {
+      return url;
     }
 
     // Other full URLs
@@ -145,7 +142,7 @@ const PresentationTable = ({ presentations = [], onSettings }) => {
     }
 
     // Relative URL
-    return `https://digilateral.com${url.startsWith("/") ? "" : "/"}${url}`;
+    return `${BACKEND_BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
   };
 
   /* ==========================================
