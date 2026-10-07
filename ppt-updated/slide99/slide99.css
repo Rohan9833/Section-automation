@@ -1,0 +1,234 @@
+.background {
+	position: absolute;
+	z-index: 1;
+}
+
+.title1{
+	position: absolute;
+    top: 335px;
+    left: 605px;
+    z-index: 2;
+    width: 480px;
+    height: auto;
+	animation: zoomIn 1.5s forwards ;
+    -webkit-animation: zoomIn 0.5s forwards;
+    animation-delay: 0s;
+}
+
+.title1 img{
+	width: 80%;
+	height: 100%;
+}
+
+
+.title2{
+	position: absolute;
+    top: 260px;
+    left: 25px;
+    z-index: 1;
+    width: 290px;
+    height: auto;
+    animation: fadeIn 1.2s forwards ease-in;
+    -webkit-animation: fadeIn 1.2s forwards ease-in;
+    animation-delay: 1s;
+    opacity: 0;
+}
+
+.title2 img{
+	width: 100%;
+	height: 100%;
+    
+}
+
+
+
+
+.title3{
+	position: absolute;
+    top: 270px;
+    left: 690px;
+    z-index: 1;
+    width: 290px;
+    height: auto;
+    animation: fadeIn 0.5s forwards ease-in;
+    -webkit-animation: fadeIn 0.5s forwards ease-in;
+    animation-delay: 1s;
+    opacity: 0;
+	
+}
+
+.title3 img{
+	width: 100%;
+	height: 100%;
+  
+}
+
+
+.title4{
+	position: absolute;
+    top: 180px;
+    left: 325px;
+    z-index: 1;
+    width: 360px;
+    height: auto;
+    animation: rollFromLeft 0.5s forwards ease-in;
+    -webkit-animation: rollFromLeft 0.5s forwards ease-in;
+    animation-delay: 2.2s;
+    opacity: 0;
+	
+}
+
+.title4 img{
+	width: 100%;
+	height: 100%;
+  
+}
+
+
+.title5{
+	position: absolute;
+    top: 330px;
+    left: 330px;
+    z-index: 1;
+    width: 340px;
+    height: auto;
+    animation: rollFromRight 0.5s forwards ease-in;
+    -webkit-animation: rollFromRight 0.5s forwards ease-in;
+    animation-delay: 3s;
+    opacity: 0;
+	
+}
+
+.title5 img{
+	width: 100%;
+	height: 100%;
+  
+}
+
+
+.title6{
+	position: absolute;
+    top: 476px;
+    left: 330px;
+    z-index: 1;
+    width: 340px;
+    height: auto;
+    animation: rollFromLeft 0.5s forwards ease-in;
+    -webkit-animation: rollFromLeft 0.5s forwards ease-in;
+    animation-delay: 3.6s;
+    opacity: 0;
+	
+}
+
+.title6 img{
+	width: 100%;
+	height: 100%;
+  
+}
+
+
+.frame {
+    position:absolute;
+    display:none;
+    z-index:4;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height:100%;
+}
+.frame img {width: 80%;
+    height: 61%;
+    padding: 50px;
+    position: absolute;
+    top: 78px;
+    right: 48px;
+}
+ 
+.frameclose {
+    position: absolute;
+    right:25px;
+    top:10px;
+    color: #fff;
+    display:none;
+    z-index:5;
+}
+ 
+ 
+.frame2 {
+    position:absolute;
+    display:none;
+    z-index:4;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height:100%;
+   
+   
+}
+.frame2 img {width: 100%;
+    height: 100%;
+    position: absolute;
+    right: 0px; 
+}
+ 
+.frameclose2 {
+    position: absolute;
+    right:25px;
+    top:10px;
+    color: #fff;
+    display:none;
+    z-index:5;
+}
+
+
+.frame3 {
+    position:absolute;
+    display:none;
+    z-index:4;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height:100%;
+   
+   
+}
+.frame3 img {width: 100%;
+    height: 100%;
+    position: absolute;
+    right: 0px;  }
+ 
+.frameclose3 {
+    position: absolute;
+    right:25px;
+    top:10px;
+    color: #fff;
+    display:none;
+    z-index:5;
+}
+ 
+
+
+.frame4 {
+    position:absolute;
+    display:none;
+    z-index:4;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    width: 100%;
+    height:100%;
+   
+   
+}
+.frame4 img {width: 100%;
+    height: 100%;
+    position: absolute;
+    right: 0px;  }
+ 
+.frameclose4 {
+    position: absolute;
+    right:25px;
+    top:10px;
+    color: #fff;
+    display:none;
+    z-index:5;
+}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title || 'digiLATERAL · Sign in' %></title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, Helvetica, sans-serif;
+      background: #f5f6f8;
+      color: #303238;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    @keyframes pageEnter {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-card {
+      background: #ffffff;
+      border: 1px solid #ececef;
+      border-radius: 20px;
+      padding: 48px 40px 40px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.02);
+      animation: pageEnter 0.45s ease-out;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .login-card:hover {
+      box-shadow: 0 20px 56px rgba(0, 0, 0, 0.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+    .brand span:first-child {
+      color: #f47a32;
+    }
+    .brand span:last-child {
+      color: #55585d;
+    }
+
+    .subhead {
+      text-align: center;
+      color: #777b82;
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 13px;
+      color: #303238;
+      margin-bottom: 6px;
+    }
+    .form-group .hint {
+      font-size: 12px;
+      color: #9a9da3;
+      margin-top: 4px;
+    }
+
+    .form-input {
+      width: 100%;
+      height: 46px;
+      padding: 0 16px;
+      border: 1px solid #d5d7db;
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #ffffff;
+      color: #303238;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      outline: none;
+    }
+    .form-input:focus {
+      border-color: #f47a32;
+      box-shadow: 0 0 0 4px rgba(244, 122, 50, 0.08);
+    }
+    .form-input::placeholder {
+      color: #a3a6ad;
+    }
+
+    .submit-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      height: 48px;
+      background: #f47a32;
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(244, 122, 50, 0.2);
+      transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  box-shadow 0.2s ease,
+                  background 0.2s ease;
+      margin-top: 8px;
+    }
+    .submit-btn:hover {
+      background: #e86d28;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(244, 122, 50, 0.22);
+    }
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+    .submit-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* error message */
+    .error-message {
+      background: #fef2f0;
+      border: 1px solid #fcd8d4;
+      color: #b33a2e;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: <% if (typeof error !== 'undefined' && error) { %>block<% } else { %>none<% } %>;
+    }
+
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 32px 20px 28px;
+      }
+      .brand {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="login-card">
+  <!-- brand -->
+  <div class="brand">
+    <span>digi</span><span>LATERAL</span>
+  </div>
+  <p class="subhead">Sign in to your account</p>
+
+  <!-- error message -->
+  <% if (typeof error !== 'undefined' && error) { %>
+    <div class="error-message">
+      <strong>Error:</strong> <%= error %>
+    </div>
+  <% } %>
+
+  <!-- login form -->
+  <form id="loginForm" action="/login" method="POST">
+    <!-- ID / email -->
+    <div class="form-group">
+      <label for="loginId">Username</label>
+      <input
+        type="text"
+        id="loginId"
+        name="username"
+        class="form-input"
+        placeholder="Enter your username"
+        required
+        autofocus
+        value="<%= typeof username !== 'undefined' ? username : '' %>"
+      />
+    </div>
+
+    <!-- password -->
+    <div class="form-group">
+      <label for="loginPassword">Password</label>
+      <input
+        type="password"
+        id="loginPassword"
+        name="password"
+        class="form-input"
+        placeholder="••••••••"
+        required
+      />
+    </div>
+
+    <!-- submit -->
+    <button type="submit" class="submit-btn">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M6.34 17.66l-2.83 2.83M17.66 6.34l2.83-2.83M4.93 19.07l2.83-2.83"/>
+        <circle cx="12" cy="12" r="4"/>
+      </svg>
+      Sign in
+    </button>
+  </form>
+
+</div>
+
+</body>
+</html>

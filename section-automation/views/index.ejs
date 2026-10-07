@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>digiLATERAL | PPT Automation</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: Arial, Helvetica, sans-serif;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(244, 122, 50, 0.07),
+            transparent 35%
+          ),
+          #f5f6f8;
+        color: #303238;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        padding: 40px 24px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 640px;
+        padding: 40px;
+        background: #ffffff;
+        border: 1px solid #ececef;
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.07);
+        align-self: flex-start;
+      }
+
+      .header {
+        margin-bottom: 30px;
+      }
+
+      .logo {
+        display: inline-block;
+        margin-bottom: 18px;
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+
+      .logo-digi {
+        color: #f47a32;
+      }
+      .logo-lateral {
+        color: #55585d;
+      }
+
+      h1 {
+        margin-bottom: 8px;
+        color: #303238;
+        font-size: 30px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .subtitle {
+        color: #777b82;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #37383c;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      /* Project input with warning icon */
+      .project-input-wrapper {
+        position: relative;
+        width: 100%;
+      }
+
+      .project-input-wrapper input[type="text"] {
+        width: 100%;
+        height: 48px;
+        padding: 0 44px 0 14px;
+        border: 1px solid #d5d7db;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #303238;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .project-input-wrapper input[type="text"]::placeholder {
+        color: #a0a3a8;
+      }
+      .project-input-wrapper input[type="text"]:hover {
+        border-color: #bfc2c7;
+      }
+      .project-input-wrapper input[type="text"]:focus {
+        border-color: #f47a32;
+        box-shadow: 0 0 0 3px rgba(244, 122, 50, 0.08);
+      }
+
+      /* Warning icon inside input - subtle pulse */
+      .link-warning {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #e65100;
+        cursor: help;
+        display: none;
+        user-select: none;
+        animation: warningPulse 2s ease-in-out infinite;
+      }
+
+      .link-warning.show {
+        display: block;
+      }
+
+      @keyframes warningPulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.55;
+        }
+      }
+
+      .link-warning:hover {
+        opacity: 0.8;
+        animation-play-state: paused;
+      }
+
+      /* Tooltip for the warning icon */
+      .link-warning::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        right: 0;
+        top: calc(100% + 8px);
+        background: #303238;
+        color: #ffffff;
+        padding: 8px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      .link-warning:hover::after {
+        opacity: 1;
+      }
+
+      /* Regular inputs */
+      input[type="text"],
+      input[type="datetime-local"] {
+        width: 100%;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid #d5d7db;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #303238;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      input[type="text"]::placeholder,
+      input[type="datetime-local"]::placeholder {
+        color: #a0a3a8;
+      }
+      input[type="text"]:hover,
+      input[type="datetime-local"]:hover {
+        border-color: #bfc2c7;
+      }
+      input[type="text"]:focus,
+      input[type="datetime-local"]:focus {
+        border-color: #f47a32;
+        box-shadow: 0 0 0 3px rgba(244, 122, 50, 0.08);
+      }
+
+      /* ---- Existing link row - smooth appear/disappear ---- */
+      .existing-link-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 0 16px;
+        margin-bottom: 0;
+        background: #fafbfc;
+        border: 1px solid #ececef;
+        border-radius: 10px;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transform: translateY(-6px);
+        transition:
+          max-height 0.35s ease,
+          opacity 0.3s ease,
+          transform 0.3s ease,
+          margin-bottom 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .existing-link-row.show {
+        max-height: 80px;
+        opacity: 1;
+        transform: translateY(0);
+        padding: 14px 16px;
+        margin-bottom: 20px;
+      }
+
+      .existing-link-row .link-warning-row {
+        font-size: 20px;
+        color: #e65100;
+        flex-shrink: 0;
+        cursor: help;
+        position: relative;
+        margin-top: 1px;
+      }
+
+      .existing-link-row .link-warning-row::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #303238;
+        color: #ffffff;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+      }
+
+      .existing-link-row .link-warning-row:hover::after {
+        opacity: 1;
+      }
+
+      .existing-link-content {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+        flex: 1;
+      }
+
+      .existing-link-message {
+        color: #303238;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .existing-link {
+        color: #f47a32;
+        font-size: 13px;
+        font-weight: 500;
+        text-decoration: none;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        transition: color 0.2s ease;
+      }
+
+      .existing-link:hover {
+        color: #d96122;
+        text-decoration: underline;
+      }
+
+      /* ---- Settings fields (from modal) ---- */
+      .settings-section {
+        border-top: 1px solid #ececef;
+        padding-top: 20px;
+        margin-top: 20px;
+      }
+
+      .settings-section-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #303238;
+        margin-bottom: 4px;
+      }
+
+      .settings-section-sub {
+        color: #777b82;
+        font-size: 13px;
+        margin-bottom: 18px;
+      }
+
+      /* Toggle Switch */
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-top: 4px;
+      }
+
+      .toggle-track {
+        width: 48px;
+        height: 26px;
+        border-radius: 26px;
+        background: #d5d7db;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.25s ease;
+        flex-shrink: 0;
+      }
+
+      .toggle-track.active {
+        background: #f47a32;
+      }
+
+      .toggle-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #ffffff;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        transition: transform 0.25s ease;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+      }
+
+      .toggle-track.active .toggle-thumb {
+        transform: translateX(22px);
+      }
+
+      .toggle-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #303238;
+      }
+
+      .toggle-label.inactive {
+        color: #999ca1;
+      }
+
+      .hint {
+        color: #999ca1;
+        font-size: 12px;
+        margin-top: 6px;
+      }
+
+      /* Select dropdown */
+      .modal-select {
+        width: 100%;
+        height: 48px;
+        padding: 0 14px;
+        border: 1px solid #d5d7db;
+        border-radius: 8px;
+        background: #ffffff;
+        color: #303238;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 14px;
+        outline: none;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999ca1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        cursor: pointer;
+      }
+
+      .modal-select:hover {
+        border-color: #bfc2c7;
+      }
+      .modal-select:focus {
+        border-color: #f47a32;
+        box-shadow: 0 0 0 3px rgba(244, 122, 50, 0.08);
+      }
+
+      /* Expiration preview box */
+      .expiration-preview-box {
+        background: #fafbfc;
+        border: 1px solid #ececef;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: #303238;
+      }
+
+      .expiration-preview-box strong {
+        font-weight: 600;
+      }
+
+      .expiration-preview-box span {
+        color: #f47a32;
+        font-weight: 500;
+      }
+
+      /* ---- Centered Submit Button with Loader ---- */
+      .form-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 24px;
+      }
+
+      .submit-btn {
+        position: relative;
+        min-width: 200px;
+        height: 50px;
+        padding: 0 32px;
+        border: 0;
+        border-radius: 8px;
+        background: #f47a32;
+        color: #ffffff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background 0.2s ease,
+          opacity 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .submit-btn:hover {
+        background: #e86d28;
+      }
+
+      .submit-btn:active {
+        background: #d96122;
+      }
+
+      .submit-btn.loading {
+        background: #e86d28;
+        cursor: not-allowed;
+        opacity: 0.85;
+      }
+
+      .submit-btn .btn-text {
+        transition: opacity 0.2s ease;
+      }
+
+      .submit-btn.loading .btn-text {
+        opacity: 0;
+      }
+
+      /* Spinner */
+      .btn-spinner {
+        display: none;
+        width: 22px;
+        height: 22px;
+        border: 2.5px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        position: absolute;
+      }
+
+      .submit-btn.loading .btn-spinner {
+        display: block;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .checkbox-count {
+        display: inline-block;
+        margin-left: 8px;
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: rgba(244, 122, 50, 0.1);
+        color: #f47a32;
+        font-size: 11px;
+        font-weight: 700;
+        vertical-align: middle;
+      }
+
+      .checkbox-group {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .section-item {
+        border: 1px solid #e6e8eb;
+        border-radius: 10px;
+        background: #fcfcfd;
+        transition:
+          border-color 0.25s ease,
+          background 0.25s ease;
+        overflow: hidden;
+      }
+
+      .section-item.expanded {
+        border-color: #f47a32;
+        background: #fffbf9;
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-radius: 8px;
+        background: #ffffff;
+        cursor: pointer;
+        transition: background 0.15s ease;
+        width: 100%;
+        border: none;
+        font: inherit;
+        color: inherit;
+        text-align: left;
+      }
+
+      .section-header:hover {
+        background: #fafafa;
+      }
+
+      .section-header input[type="checkbox"] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+        pointer-events: none;
+      }
+
+      .checkbox-box {
+        flex: 0 0 18px;
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid #d5d7db;
+        border-radius: 5px;
+        background: #ffffff;
+        position: relative;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+        pointer-events: none;
+      }
+
+      .checkbox-box::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 5px;
+        width: 5px;
+        height: 9px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) scale(0);
+        transition: transform 0.15s ease;
+      }
+
+      .section-header input[type="checkbox"]:checked + .checkbox-box {
+        border-color: #f47a32;
+        background: #f47a32;
+      }
+      .section-header input[type="checkbox"]:checked + .checkbox-box::after {
+        transform: rotate(45deg) scale(1);
+      }
+
+      .section-header input[type="checkbox"]:indeterminate + .checkbox-box {
+        border-color: #f47a32;
+        background: #f47a32;
+      }
+      .section-header
+        input[type="checkbox"]:indeterminate
+        + .checkbox-box::after {
+        top: 7px;
+        left: 4px;
+        width: 8px;
+        height: 2px;
+        border: none;
+        background: #ffffff;
+        transform: scale(1);
+      }
+
+      .checkbox-label {
+        color: #37383c;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.3;
+        flex: 1;
+        pointer-events: none;
+      }
+
+      .checkbox-chevron {
+        margin-left: auto;
+        color: #9a9da3;
+        transition:
+          transform 0.25s ease,
+          color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+      }
+
+      .checkbox-chevron svg {
+        width: 20px;
+        height: 20px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .section-item.expanded .checkbox-chevron {
+        transform: rotate(180deg);
+        color: #f47a32;
+      }
+
+      .section-actions {
+        display: flex;
+        gap: 12px;
+        padding: 0 14px;
+        justify-content: flex-end;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition:
+          opacity 0.25s ease,
+          max-height 0.3s ease,
+          padding 0.3s ease;
+      }
+
+      .section-item.expanded .section-actions {
+        opacity: 1;
+        max-height: 60px;
+        padding: 0 14px 10px;
+      }
+
+      .section-actions button {
+        background: transparent;
+        border: 1px solid #d5d7db;
+        border-radius: 20px;
+        padding: 4px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #55585d;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .section-actions button:hover {
+        border-color: #f47a32;
+        color: #f47a32;
+        background: rgba(244, 122, 50, 0.05);
+      }
+
+      .section-actions button.select-all-btn {
+        color: #f47a32;
+        border-color: #f47a32;
+      }
+
+      .section-actions button.select-all-btn:hover {
+        background: #f47a32;
+        color: #fff;
+      }
+
+      .slide-panel {
+        margin: 0 12px 12px 12px;
+        padding: 12px 6px 6px 6px;
+        border-top: 1px dashed #e0e2e5;
+      }
+
+      .slide-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+        gap: 10px;
+      }
+
+      .slide-thumb {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 6px;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          background 0.2s ease,
+          border-color 0.2s ease;
+        position: relative;
+      }
+
+      .slide-thumb:hover {
+        background: #ffffff;
+        border-color: #e2e4e7;
+      }
+
+      .slide-thumb:has(.slide-checkbox:checked) {
+        background: rgba(244, 122, 50, 0.07);
+        border-color: rgba(244, 122, 50, 0.35);
+      }
+
+      .slide-thumb input[type="checkbox"] {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      .slide-img-wrap {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        border: 1px solid #e2e4e7;
+        border-radius: 6px;
+        background: #eceef0;
+        overflow: hidden;
+        transition: outline 0.2s ease;
+      }
+
+      .slide-thumb:has(.slide-checkbox:checked) .slide-img-wrap {
+        outline: 2px solid #f47a32;
+        outline-offset: 1px;
+      }
+
+      .slide-img-wrap img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: contain;
+      }
+
+      .slide-img-fallback {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: repeating-linear-gradient(
+          45deg,
+          #f1f2f4,
+          #f1f2f4 6px,
+          #e9eaec 6px,
+          #e9eaec 12px
+        );
+        color: #9a9da3;
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .slide-checkbox-box {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 16px;
+        height: 16px;
+        border: 1.5px solid #ffffff;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+        z-index: 2;
+        transition:
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .slide-checkbox-box::after {
+        content: "";
+        position: absolute;
+        top: 1px;
+        left: 4px;
+        width: 4px;
+        height: 8px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg) scale(0);
+        transition: transform 0.15s ease;
+      }
+
+      .slide-checkbox:checked + .slide-checkbox-box {
+        border-color: #f47a32;
+        background: #f47a32;
+      }
+
+      .slide-checkbox:checked + .slide-checkbox-box::after {
+        transform: rotate(45deg) scale(1);
+      }
+
+      .slide-checkbox:focus-visible + .slide-checkbox-box {
+        box-shadow: 0 0 0 3px rgba(244, 122, 50, 0.25);
+      }
+
+      .slide-num {
+        color: #777b82;
+        font-size: 10px;
+        font-weight: 500;
+        text-align: center;
+      }
+
+      .global-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        justify-content: flex-end;
+      }
+
+      .global-actions button {
+        background: transparent;
+        border: 1px solid #d5d7db;
+        border-radius: 20px;
+        padding: 4px 18px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #55585d;
+        cursor: pointer;
+        font-family: Arial, sans-serif;
+        transition: all 0.2s ease;
+      }
+
+      .global-actions button:hover {
+        border-color: #f47a32;
+        color: #f47a32;
+        background: rgba(244, 122, 50, 0.05);
+      }
+
+      .global-actions button.select-all-btn {
+        color: #f47a32;
+        border-color: #f47a32;
+      }
+
+      .global-actions button.select-all-btn:hover {
+        background: #f47a32;
+        color: #fff;
+      }
+
+      @media (max-width: 600px) {
+        .card {
+          padding: 28px 22px;
+        }
+        .logo {
+          font-size: 25px;
+        }
+        h1 {
+          font-size: 26px;
+        }
+        .subtitle {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .slide-grid {
+          grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+        }
+
+        .existing-link-row {
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 12px 14px;
+        }
+
+        .existing-link-content {
+          width: 100%;
+        }
+
+        .existing-link {
+          white-space: normal;
+          word-break: break-all;
+        }
+
+        .submit-btn {
+          min-width: 150px;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav
+      style="
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: #ffffff;
+        border-bottom: 1px solid #ececef;
+        padding: 0 24px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      "
+    >
+      <!-- LEFT SIDE -->
+      <div style="display: flex; align-items: center; gap: 24px">
+        <!-- LOGO -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+          "
+        >
+          <span style="color: #f47a32">digi</span>
+          <span style="color: #55585d">LATERAL</span>
+        </div>
+
+        <!-- NAV LINKS -->
+        <div style="display: flex; align-items: center; gap: 4px">
+          <!-- Dashboard -->
+          <!-- <a
+            href="#"
+            style="
+              text-decoration: none;
+              color: #777b82;
+              font-size: 14px;
+              font-weight: 500;
+              padding: 9px 14px;
+              border-radius: 8px;
+              transition:
+                color 0.2s ease,
+                background 0.2s ease;
+            "
+            onmouseover="
+              this.style.color = '#f47a32';
+              this.style.background = '#fff5ef';
+            "
+            onmouseout="
+              this.style.color = '#777b82';
+              this.style.background = 'transparent';
+            "
+          >
+            Dashboard
+          </a> -->
+
+          <!-- Presentations -->
+          <a
+            href="/presentations"
+            style="
+              text-decoration: none;
+              color: #777b82;
+              font-size: 14px;
+              font-weight: 500;
+              padding: 9px 14px;
+              border-radius: 8px;
+              transition:
+                color 0.2s ease,
+                background 0.2s ease;
+            "
+            onmouseover="
+              this.style.color = '#f47a32';
+              this.style.background = '#fff5ef';
+            "
+            onmouseout="
+              this.style.color = '#777b82';
+              this.style.background = 'transparent';
+            "
+          >
+            Presentations
+          </a>
+
+          <!-- Create PPT - ACTIVE -->
+          <a
+            href="/urlForm"
+            style="
+              text-decoration: none;
+              color: #f47a32;
+              background: #fff3eb;
+              font-size: 14px;
+              font-weight: 600;
+              padding: 9px 14px;
+              border-radius: 8px;
+              transition:
+                color 0.2s ease,
+                background 0.2s ease;
+            "
+          >
+            Create PPT
+          </a>
+
+          <!-- Create Zip -->
+          <a
+            href="/create-zip"
+            style="
+              text-decoration: none;
+              color: #777b82;
+              font-size: 14px;
+              font-weight: 500;
+              padding: 9px 14px;
+              border-radius: 8px;
+              transition:
+                color 0.2s ease,
+                background 0.2s ease;
+            "
+            onmouseover="
+              this.style.color = '#f47a32';
+              this.style.background = '#fff5ef';
+            "
+            onmouseout="
+              this.style.color = '#777b82';
+              this.style.background = 'transparent';
+            "
+          >
+            Create Zip
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div style="display: flex; align-items: center; gap: 16px">
+        <!-- NOTIFICATION -->
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#777b82"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          style="cursor: pointer; transition: stroke 0.2s ease"
+          onmouseover="this.style.stroke = '#f47a32'"
+          onmouseout="this.style.stroke = '#777b82'"
+        >
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+
+        <!-- USER -->
+        <div
+          style="display: flex; align-items: center; gap: 10px; cursor: default"
+        >
+          <!-- AVATAR -->
+          <div
+            style="
+              width: 34px;
+              height: 34px;
+              border-radius: 50%;
+              background: #f47a32;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: #ffffff;
+              font-size: 13px;
+              font-weight: 600;
+            "
+          >
+            D
+          </div>
+
+          <!-- NAME -->
+          <span style="font-size: 14px; font-weight: 500; color: #303238">
+            DigiLateral
+          </span>
+
+          <!-- DROPDOWN -->
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#9a9da3"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+      </div>
+    </nav>
+    <div class="page">
+      <div class="card">
+        <div class="header">
+          <div class="logo">
+            <span class="logo-digi">digi</span
+            ><span class="logo-lateral">LATERAL</span>
+          </div>
+          <h1>PPT Automation</h1>
+          <p class="subtitle">
+            Configure your presentation and update the dashboard automatically.
+          </p>
+        </div>
+
+        <form action="/url/generate" method="POST" id="pptForm">
+          <div class="form-group">
+            <label for="companyName">Company Name</label>
+            <input
+              type="text"
+              id="companyName"
+              name="companyName"
+              placeholder="Enter company name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="divisionName">Division Name</label>
+            <input
+              type="text"
+              id="divisionName"
+              name="divisionName"
+              placeholder="Enter division name"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="userName">Individual Name</label>
+            <input
+              type="text"
+              id="userName"
+              name="userName"
+              placeholder="Enter your name"
+              required
+            />
+          </div>
+
+          <!-- Project Name with warning icon inside -->
+          <div class="form-group">
+            <label for="projectName">Project Name</label>
+            <div class="project-input-wrapper">
+              <input
+                type="text"
+                id="projectName"
+                name="projectName"
+                placeholder="Enter project name"
+                required
+              />
+              <span
+                id="linkWarning"
+                class="link-warning"
+                data-tooltip="A presentation with this project name already exists. The existing link will be overwritten."
+                title="A presentation with this project name already exists"
+              >
+                ⚠️
+              </span>
+            </div>
+          </div>
+
+          <!-- Conditional row: warning icon + "Link already exists" message + URL -->
+          <div class="existing-link-row" id="existingLinkRow">
+            <span
+              class="link-warning-row"
+              data-tooltip="This presentation link already exists"
+            >
+              ⚠️
+            </span>
+
+            <div class="existing-link-content">
+              <span class="existing-link-message">Link already exists</span>
+              <a href="#" id="openLink" class="existing-link" target="_blank">
+                <span id="presentationLink"></span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ============================================ -->
+          <!-- SETTINGS FIELDS (from modal)                 -->
+          <!-- ============================================ -->
+          <div class="settings-section">
+            <div class="settings-section-title">Presentation Settings</div>
+            <p class="settings-section-sub">
+              Configure link status and expiration.
+            </p>
+
+            <!-- Active/Inactive Toggle -->
+            <div class="form-group">
+              <label>Link Status</label>
+              <div class="toggle-wrap">
+                <div
+                  class="toggle-track active"
+                  id="toggleTrack"
+                  onclick="toggleActive()"
+                >
+                  <div class="toggle-thumb"></div>
+                </div>
+                <span class="toggle-label" id="toggleLabel">Active</span>
+              </div>
+              <div class="hint">
+                When inactive, the link will show as expired/inactive to users.
+              </div>
+            </div>
+
+            <!-- Hidden input for active status -->
+            <input type="hidden" id="activeInput" name="active" value="true" />
+
+            <!-- Expiration -->
+            <div class="form-group">
+              <label>Expiration</label>
+              <select
+                id="expirationSelect"
+                class="modal-select"
+                name="expiration"
+                onchange="handleExpirationChange()"
+              >
+                <option value="never">No expiration</option>
+                <option value="1d">1 day</option>
+                <option value="7d">7 days</option>
+                <option value="30d">30 days</option>
+                <option value="90d">90 days</option>
+                <option value="custom">Custom date</option>
+              </select>
+              <div class="hint">
+                Set when this presentation link should expire.
+              </div>
+            </div>
+
+            <!-- Custom Date Input -->
+            <div class="form-group" id="customDateGroup" style="display: none">
+              <label>Custom expiration date</label>
+              <input
+                type="datetime-local"
+                id="customDateInput"
+                name="customExpiration"
+                class="modal-input"
+              />
+              <div class="hint">
+                Select a specific date and time for expiration.
+              </div>
+            </div>
+
+            <!-- Expiration Preview -->
+            <div
+              class="form-group"
+              id="expirationPreviewGroup"
+              style="display: none"
+            >
+              <div class="expiration-preview-box">
+                <strong>Will expire:</strong>
+                <span id="expirationPreviewText">—</span>
+              </div>
+            </div>
+
+            <input
+              type="hidden"
+              id="presentationId"
+              name="presentationId"
+              value=""
+            />
+          </div>
+
+          <!-- ============================================ -->
+          <!-- END SETTINGS FIELDS                          -->
+          <!-- ============================================ -->
+
+          <div class="form-group">
+            <label>
+              <span>Select Presentation Sections</span>
+              <span class="checkbox-count" id="checkboxCount">0 selected</span>
+            </label>
+
+            <div class="global-actions">
+              <button type="button" class="select-all-btn" id="globalSelectAll">
+                ✔ Select All
+              </button>
+              <button type="button" id="globalResetAll">✖ Reset All</button>
+            </div>
+
+            <div class="checkbox-group" id="sectionCheckboxGroup"></div>
+          </div>
+
+          <!-- Generate Presentation button with loader -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              name="action"
+              value="generate"
+              class="submit-btn"
+              id="submitBtn"
+            >
+              <span class="btn-text">Generate Presentation</span>
+              <span class="btn-spinner"></span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        // ----- CONFIG -----
+        const SECTION_SLIDES = [
+          { key: "intro", label: "Introduction", slideIds: [1, 2, 3, 4] },
+          { key: "brand", label: "Brand Communication", slideIds: [5, 6, 7] },
+          { key: "extra-section", label: "Extra PPT Section", slideIds: [57, 58, 59] },
+          {
+            key: "videos",
+            label: "Videos & Animation",
+            slideIds: [8, 9, 10, 11, 12, 13, 14, 15, 16],
+          },
+          {
+            key: "personalized",
+            label: "Personalized Video",
+            slideIds: [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
+          },
+          { key: "rxpl", label: "RxPL", slideIds: [30, 31] },
+          { key: "websites", label: "Websites", slideIds: [32, 33] },
+          {
+            key: "qr",
+            label: "QR Generation",
+            slideIds: [34, 35, 36, 37, 38, 39, 40],
+          },
+          { key: "games", label: "Games", slideIds: [41, 42, 43, 44] },
+        ];
+
+        function imagePath(slideId) {
+          return "/thumbnail/" + slideId + ".png";
+        }
+
+        const group = document.getElementById("sectionCheckboxGroup");
+        const countEl = document.getElementById("checkboxCount");
+
+        // --- Warning and link logic with REAL API ---
+        const companyNameInput = document.getElementById("companyName");
+        const divisionNameInput = document.getElementById("divisionName");
+        const userNameInput = document.getElementById("userName");
+        const projectNameInput = document.getElementById("projectName");
+        const linkWarning = document.getElementById("linkWarning");
+        const existingLinkRow = document.getElementById("existingLinkRow");
+        const presentationLink = document.getElementById("presentationLink");
+        const openLink = document.getElementById("openLink");
+
+        let checkRequestId = 0;
+        let debounceTimer = null;
+
+        async function checkLinkExists() {
+          const requestId = ++checkRequestId;
+
+          const companyName = companyNameInput.value.trim();
+          const divisionName = divisionNameInput.value.trim();
+          const userName = userNameInput.value.trim();
+          const projectName = projectNameInput.value.trim();
+
+          // Hide if any field is empty
+          if (!companyName || !divisionName || !userName || !projectName) {
+            linkWarning.classList.remove("show");
+            existingLinkRow.classList.remove("show");
+            presentationLink.textContent = "";
+            openLink.href = "#";
+            return;
+          }
+
+          try {
+            const params = new URLSearchParams({
+              companyName,
+              divisionName,
+              userName,
+              projectName,
+            });
+
+            const response = await fetch(`/url/check?${params.toString()}`);
+            const data = await response.json();
+
+            // Ignore old request responses
+            if (requestId !== checkRequestId) return;
+
+            if (data.exists) {
+              // Show warning icon inside input
+              linkWarning.classList.add("show");
+
+              // Show the row with message + link
+              presentationLink.textContent = data.url;
+              openLink.href = data.url;
+              existingLinkRow.classList.add("show");
+            } else {
+              // Hide everything
+              linkWarning.classList.remove("show");
+              existingLinkRow.classList.remove("show");
+              presentationLink.textContent = "";
+              openLink.href = "#";
+            }
+          } catch (error) {
+            console.error("Failed to check link:", error);
+            // Hide on error to avoid false positives
+            linkWarning.classList.remove("show");
+            existingLinkRow.classList.remove("show");
+            presentationLink.textContent = "";
+            openLink.href = "#";
+          }
+        }
+
+        // Debounced check to avoid too many API calls
+        function debouncedCheck() {
+          clearTimeout(debounceTimer);
+          debounceTimer = setTimeout(checkLinkExists, 300);
+        }
+
+        // Listen to all relevant inputs
+        companyNameInput.addEventListener("input", debouncedCheck);
+        divisionNameInput.addEventListener("input", debouncedCheck);
+        userNameInput.addEventListener("input", debouncedCheck);
+        projectNameInput.addEventListener("input", debouncedCheck);
+
+        // Initial check after a short delay
+        setTimeout(checkLinkExists, 500);
+
+        // --- Toggle logic (from modal) - FIXED ---
+        window.toggleActive = function () {
+          const track = document.getElementById("toggleTrack");
+          const label = document.getElementById("toggleLabel");
+          const activeInput = document.getElementById("activeInput");
+
+          track.classList.toggle("active");
+
+          const isActive = track.classList.contains("active");
+
+          label.textContent = isActive ? "Active" : "Inactive";
+          label.classList.toggle("inactive", !isActive);
+
+          // Update hidden input value
+          activeInput.value = isActive ? "true" : "false";
+        };
+
+        window.handleExpirationChange = function () {
+          const select = document.getElementById("expirationSelect");
+          const customGroup = document.getElementById("customDateGroup");
+          const previewGroup = document.getElementById(
+            "expirationPreviewGroup",
+          );
+          const previewText = document.getElementById("expirationPreviewText");
+
+          if (select.value === "custom") {
+            customGroup.style.display = "block";
+            previewGroup.style.display = "none";
+          } else {
+            customGroup.style.display = "none";
+            const now = new Date();
+            let expiryDate = null;
+            let label = "";
+
+            switch (select.value) {
+              case "never":
+                previewGroup.style.display = "none";
+                return;
+              case "1d":
+                expiryDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+                label = "1 day from now";
+                break;
+              case "7d":
+                expiryDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                label = "7 days from now";
+                break;
+              case "30d":
+                expiryDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+                label = "30 days from now";
+                break;
+              case "90d":
+                expiryDate = new Date(now.getTime() + 90 * 24 * 60 * 60 * 1000);
+                label = "90 days from now";
+                break;
+              default:
+                previewGroup.style.display = "none";
+                return;
+            }
+
+            if (expiryDate) {
+              const formatted = expiryDate.toLocaleString("en-US", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              });
+              previewText.textContent = `${formatted} (${label})`;
+              previewGroup.style.display = "block";
+            }
+          }
+        };
+
+        // --- Section logic ---
+        function updateCount() {
+          const checked = document.querySelectorAll(
+            ".slide-checkbox:checked",
+          ).length;
+          countEl.textContent = checked + " selected";
+        }
+
+        function setSectionState(sectionEl) {
+          const sectionInput = sectionEl.querySelector(".section-toggle");
+          const slideInputs = sectionEl.querySelectorAll(".slide-checkbox");
+          const checkedCount = sectionEl.querySelectorAll(
+            ".slide-checkbox:checked",
+          ).length;
+          if (checkedCount === 0) {
+            sectionInput.checked = false;
+            sectionInput.indeterminate = false;
+          } else if (checkedCount === slideInputs.length) {
+            sectionInput.checked = true;
+            sectionInput.indeterminate = false;
+          } else {
+            sectionInput.checked = true;
+            sectionInput.indeterminate = true;
+          }
+        }
+
+        function togglePanel(sectionEl, open) {
+          const panel = sectionEl.querySelector(".slide-panel");
+          sectionEl.classList.toggle("expanded", open);
+          panel.hidden = !open;
+        }
+
+        // ---- build section ----
+        function buildSection(section) {
+          const wrap = document.createElement("div");
+          wrap.className = "section-item";
+          wrap.dataset.section = section.key;
+
+          const header = document.createElement("div");
+          header.className = "section-header";
+          header.innerHTML = `
+        <input type="checkbox" class="section-toggle" name="section[]" value="${section.key}" />
+        <span class="checkbox-box"></span>
+        <span class="checkbox-label">${section.label}</span>
+        <span class="checkbox-chevron">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>
+        </span>
+      `;
+          wrap.appendChild(header);
+
+          const actions = document.createElement("div");
+          actions.className = "section-actions";
+          actions.innerHTML = `
+        <button type="button" class="select-all-btn" data-action="selectAll">✔ Select All</button>
+        <button type="button" data-action="reset">✖ Reset</button>
+      `;
+          wrap.appendChild(actions);
+
+          const panel = document.createElement("div");
+          panel.className = "slide-panel";
+          panel.hidden = true;
+          const grid = document.createElement("div");
+          grid.className = "slide-grid";
+          panel.appendChild(grid);
+          wrap.appendChild(panel);
+
+          const sectionToggle = header.querySelector(".section-toggle");
+
+          // ---- create slide thumbs ----
+          section.slideIds.forEach((slideId, idx) => {
+            const displayNum = idx + 1;
+            const thumb = document.createElement("label");
+            thumb.className = "slide-thumb";
+            thumb.innerHTML = `
+          <input type="checkbox" class="slide-checkbox" name="slides[${section.key}][]" value="${slideId}" />
+          <span class="slide-checkbox-box"></span>
+          <span class="slide-img-wrap">
+            <img src="${imagePath(slideId)}" alt="${section.label} slide ${displayNum}" loading="lazy" />
+          </span>
+          <span class="slide-num">Slide ${displayNum}</span>
+        `;
+
+            const img = thumb.querySelector("img");
+            img.addEventListener("error", function () {
+              const wrapEl = thumb.querySelector(".slide-img-wrap");
+              wrapEl.classList.add("slide-img-missing");
+              wrapEl.innerHTML = `<span class="slide-img-fallback">Slide ${displayNum}</span>`;
+            });
+
+            const slideCheckbox = thumb.querySelector(".slide-checkbox");
+            slideCheckbox.checked = false;
+            slideCheckbox.addEventListener("change", function () {
+              setSectionState(wrap);
+              updateCount();
+            });
+
+            grid.appendChild(thumb);
+          });
+
+          // ---- header click: toggle panel only, NO slide selection ----
+          header.addEventListener("click", function (e) {
+            const target = e.target;
+            const isChevron = target.closest(".checkbox-chevron");
+            const isCheckbox =
+              target.closest(".checkbox-box") ||
+              target.closest(".section-toggle");
+
+            if (isCheckbox) {
+              const isCurrentlyChecked = sectionToggle.checked;
+              sectionToggle.checked = !isCurrentlyChecked;
+              sectionToggle.indeterminate = false;
+              const shouldCheck = sectionToggle.checked;
+              const slides = wrap.querySelectorAll(".slide-checkbox");
+              slides.forEach((cb) => (cb.checked = shouldCheck));
+              togglePanel(wrap, shouldCheck);
+              setSectionState(wrap);
+              updateCount();
+              return;
+            }
+
+            if (isChevron) {
+              e.preventDefault();
+              const isOpen = wrap.classList.contains("expanded");
+              togglePanel(wrap, !isOpen);
+              setSectionState(wrap);
+              return;
+            }
+
+            const isOpen = wrap.classList.contains("expanded");
+            togglePanel(wrap, !isOpen);
+            setSectionState(wrap);
+          });
+
+          // ---- actions ----
+          const selectAllBtn = actions.querySelector(
+            '[data-action="selectAll"]',
+          );
+          const resetBtn = actions.querySelector('[data-action="reset"]');
+
+          selectAllBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const checkboxes = wrap.querySelectorAll(".slide-checkbox");
+            checkboxes.forEach((cb) => (cb.checked = true));
+            setSectionState(wrap);
+            updateCount();
+            togglePanel(wrap, true);
+            sectionToggle.checked = true;
+            sectionToggle.indeterminate = false;
+          });
+
+          resetBtn.addEventListener("click", function (e) {
+            e.stopPropagation();
+            const checkboxes = wrap.querySelectorAll(".slide-checkbox");
+            checkboxes.forEach((cb) => (cb.checked = false));
+            setSectionState(wrap);
+            updateCount();
+            togglePanel(wrap, false);
+            sectionToggle.checked = false;
+            sectionToggle.indeterminate = false;
+          });
+
+          // ensure initial state: all unchecked
+          sectionToggle.checked = false;
+          sectionToggle.indeterminate = false;
+          wrap
+            .querySelectorAll(".slide-checkbox")
+            .forEach((cb) => (cb.checked = false));
+          togglePanel(wrap, false);
+          setSectionState(wrap);
+
+          return wrap;
+        }
+
+        // ---- render ----
+        SECTION_SLIDES.forEach((section) => {
+          group.appendChild(buildSection(section));
+        });
+
+        updateCount();
+
+        // ---- global actions ----
+        document
+          .getElementById("globalSelectAll")
+          .addEventListener("click", function () {
+            document
+              .querySelectorAll(".slide-checkbox")
+              .forEach((cb) => (cb.checked = true));
+            document.querySelectorAll(".section-item").forEach((wrap) => {
+              setSectionState(wrap);
+              togglePanel(wrap, true);
+              const toggle = wrap.querySelector(".section-toggle");
+              toggle.checked = true;
+              toggle.indeterminate = false;
+            });
+            updateCount();
+          });
+
+        document
+          .getElementById("globalResetAll")
+          .addEventListener("click", function () {
+            document
+              .querySelectorAll(".slide-checkbox")
+              .forEach((cb) => (cb.checked = false));
+            document.querySelectorAll(".section-item").forEach((wrap) => {
+              setSectionState(wrap);
+              togglePanel(wrap, false);
+              const toggle = wrap.querySelector(".section-toggle");
+              toggle.checked = false;
+              toggle.indeterminate = false;
+            });
+            updateCount();
+          });
+
+        // ---- Submit button loader ----
+        const submitBtn = document.getElementById("submitBtn");
+        const form = document.getElementById("pptForm");
+
+        form.addEventListener("submit", function (e) {
+          // Add loading state
+          submitBtn.classList.add("loading");
+          submitBtn.disabled = true;
+        });
+      })();
+    </script>
+  </body>
+</html>
