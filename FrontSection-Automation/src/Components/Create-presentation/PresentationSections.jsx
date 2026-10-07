@@ -72,6 +72,11 @@ const SECTION_SLIDES = [
     label: "DocTalkQuiz",
     slideIds: [104],
   },
+  {
+    key: "calendar-me",
+    label: "CalendarME",
+    slideIds: [105, 106, 107],
+  },
 ];
 
 const PresentationSections = ({
