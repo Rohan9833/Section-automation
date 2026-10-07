@@ -9,6 +9,7 @@ function updateHtml(
   divisionSlug,
   usernameSlug,
   projectSlug,
+  useSharedAssets = true,
 ) {
   const htmlPath = path.join(baseDir, "index.html");
 
