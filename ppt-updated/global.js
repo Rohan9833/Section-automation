@@ -78,6 +78,11 @@ const sections = {
     name: "Field Motivation",
     slides: [101],
   },
+  docTalk: {
+    id: "docTalk",
+    name: "DocTalk",
+    slides: [102],
+  },
 };
 
 function normalizeRequest(request) {
@@ -108,6 +113,7 @@ function buildPresentation(config) {
     games: "games",
     "product-advertisement": "productAdvertisement",
     "field-motivation": "fieldMotivation",
+    "doc-talk": "docTalk",
   };
 
   const presentation = [];
@@ -896,6 +902,13 @@ function set_pg_content(sectionName, slideId) {
       case 101:
         content =
           '<link rel="stylesheet" type="text/css" href="slide101/slide101.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Field Motivation</p></div><div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div><div class="title3" class="frameopen"><video src="slide101/video.mp4" width="800" height="auto" controls controlslist="nodownload"></video></div>';
+        break;
+    }
+  } else if (sectionName === "docTalk") {
+    switch (slideId) {
+      case 102:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide102/slide102.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>DocTalk</p></div><div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div><div class="title3" class="frameopen"><video src="slide102/video.mp4" width="800" height="450" controls controlslist="nodownload"></video></div>';
         break;
     }
   } else if (sectionName === "games") {
