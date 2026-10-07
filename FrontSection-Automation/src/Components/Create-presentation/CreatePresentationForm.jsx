@@ -287,7 +287,7 @@ const CreatePresentationForm = () => {
      GET COMPLETE LINK
 
      IMPORTANT:
-     localhost:5173 will NOT be used.
+     The generated presentation is served by the local backend on port 2405.
   ========================================== */
 
   const getCompleteLink = (url) => {
