@@ -1,0 +1,15 @@
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1024px;
+    height: 768px;
+    overflow: hidden;
+}
+
+.background video {
+    width: 1024px;
+    height: 768px;
+    object-fit: contain;
+    display: block;
+}
