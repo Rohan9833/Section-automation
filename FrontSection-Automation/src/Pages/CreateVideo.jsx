@@ -4,8 +4,8 @@ import ProductDropdown from "../Components/Create-Video/ProductDropdown";
 import PresentationSettings from "../Components/Create-Video/PresentationSettings";
 import Navbar from "../Components/Navbar";
 
-const API_BASE_URL = "https://digi-ppt.digilateral.com/api";
-const VIDEO_BASE_URL = "https://digilateral.com";
+const API_BASE_URL = "/api";
+const VIDEO_BASE_URL = "http://localhost:2405";
 
 const CreateVideo = () => {
   const [formData, setFormData] = useState({
@@ -47,7 +47,7 @@ const CreateVideo = () => {
       // If backend accidentally returns the API domain,
       // convert it to the public video domain.
       return url.replace(
-        "https://digi-ppt.digilateral.com",
+        "http://localhost:2405",
         VIDEO_BASE_URL,
       );
     }
