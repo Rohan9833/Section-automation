@@ -14,6 +14,7 @@ const TEMPLATE_DIR =
 const LINKS_ROOT =
   process.env.PPT_LINKS_DIR || path.join(__dirname, "../../ppt-links");
 const PUBLIC_DOMAIN = process.env.PUBLIC_DOMAIN || "http://localhost:2405";
+const ENABLE_NGINX = process.env.ENABLE_NGINX === "true";
 
 console.log("TEMPLATE_DIR:", TEMPLATE_DIR);
 console.log("LINKS_ROOT:", LINKS_ROOT);
@@ -272,35 +273,48 @@ exports.generateUrl = async (req, res) => {
       console.log("New presentation created");
     }
 
-    // 3. Register the nginx location block for this link and go live.
-    const confPath = writeLocationBlock({
-      usernameSlug,
-      companySlug,
-      divisionSlug,
-      projectSlug,
-      targetDir,
-    });
-    try {
-  await reloadNginx();
-} catch (nginxError) {
-  console.error(
-    "Nginx reload failed:",
-    nginxError
-  );
+    // ---------------------------------------------------------
+    // PUBLIC LINK ACTIVATION
+    // ---------------------------------------------------------
+    // Local development uses Express:
+    //   app.use("/ppt", express.static(pptLinkDir))
+    //
+    // Production can enable Nginx by setting:
+    //   ENABLE_NGINX=true
+    // ---------------------------------------------------------
+    let confPath = null;
 
-  return res.status(500).json({
-    success: false,
-    message:
-      "Presentation created, but failed to activate the URL.",
-    url,
-  });
-}
+    if (ENABLE_NGINX) {
+      confPath = writeLocationBlock({
+        usernameSlug,
+        companySlug,
+        divisionSlug,
+        projectSlug,
+        targetDir,
+      });
 
-console.log(
-  `Generated ${url} -> ${targetDir} (conf: ${confPath})`
-);
+      try {
+        await reloadNginx();
+      } catch (nginxError) {
+        console.error(
+          "Nginx reload failed:",
+          nginxError
+        );
 
-return res.status(201).json({
+        return res.status(500).json({
+          success: false,
+          message:
+            "Presentation created, but failed to activate the URL.",
+          url,
+        });
+      }
+    }
+
+    console.log(
+      `Generated ${url} -> ${targetDir} (nginx: ${ENABLE_NGINX ? confPath : "disabled"})`
+    );
+
+    return res.status(201).json({
   success: true,
   message: "Presentation URL generated successfully.",
   url,
