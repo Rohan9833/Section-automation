@@ -13,7 +13,7 @@ import {
 import PresentationSettings from "./PresentationSettings";
 import PresentationSections from "./PresentationSections";
 
-const API_BASE_URL = "http://digilateral.com";
+const API_BASE_URL = "http://localhost:2405";
 
 const inputClass = `
   h-11
@@ -201,7 +201,7 @@ const CreatePresentationForm = () => {
 
         if (data?.exists) {
           setExistingLink({
-            url: `https://digilateral.com${data.url}`
+            url: `${API_BASE_URL}${data.url}`
           });
           setShowExistingPopup(true);
         } else {
