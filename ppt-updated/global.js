@@ -883,9 +883,9 @@ function set_pg_content(sectionName, slideId) {
       case 100:
         content =
           '<link rel="stylesheet" type="text/css" href="slide100/slide100.css" media="screen"/>' +
-          '<div class="video-container">' +
-          '<video src="slide100/video.mp4" controls></video>' +
-          "</div>";
+          '<div class="background">' +
+          '<video src="slide100/video.mp4" controls controlslist="nodownload"></video>' +
+          '</div>';
         break;
     }
   } else if (sectionName === "games") {
