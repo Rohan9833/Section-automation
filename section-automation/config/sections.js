@@ -15,8 +15,8 @@ module.exports = {
     start: "<!-- Persionalized Video creation -->",
     end: "<!-- RxPL -->",
   },
-  "extra-section": {
-    start: "<!-- Extra PPT Section -->",
+  "AI Activities": {
+    start: "<!-- Ai Activities -->",
     end: "<!-- Videos and Animation -->",
   },
   rxpl: { start: "<!-- RxPL -->", end: "<!-- websites -->" },

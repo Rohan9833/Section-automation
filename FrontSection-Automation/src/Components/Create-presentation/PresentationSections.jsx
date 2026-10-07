@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Check,
-  ChevronDown,
-  RotateCcw,
-} from "lucide-react";
+import { Check, ChevronDown, RotateCcw } from "lucide-react";
 
 const SECTION_SLIDES = [
   {
@@ -19,36 +15,12 @@ const SECTION_SLIDES = [
   {
     key: "videos",
     label: "Videos & Animation",
-    slideIds: [
-      8,
-      9,
-      10,
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-    ],
+    slideIds: [8, 9, 10, 11, 12, 13, 14, 15, 16],
   },
   {
     key: "personalized",
     label: "Personalized Video",
-    slideIds: [
-      17,
-      18,
-      19,
-      20,
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-    ],
+    slideIds: [17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29],
   },
   {
     key: "rxpl",
@@ -63,15 +35,7 @@ const SECTION_SLIDES = [
   {
     key: "qr",
     label: "QR Generation",
-    slideIds: [
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40,
-    ],
+    slideIds: [34, 35, 36, 37, 38, 39, 40],
   },
   {
     key: "games",
@@ -79,9 +43,14 @@ const SECTION_SLIDES = [
     slideIds: [41, 42, 43, 44],
   },
   {
-    key: "extra-section",
-    label: "Extra PPT Section",
+    key: "ai",
+    label: "Ai Activities",
     slideIds: [99], // These IDs must match your image filenames: 57.png, 58.png, 59.png
+  },
+  {
+    key: "product-advertisement",
+    label: "Product Advertisement",
+    slideIds: [100],
   },
 ];
 
@@ -92,12 +61,9 @@ const PresentationSections = ({
   setSelectedSlides,
   disabled = false,
 }) => {
-  const [expandedSections, setExpandedSections] =
-    useState([]);
+  const [expandedSections, setExpandedSections] = useState([]);
 
-  const selectedSlideCount = Object.values(
-    selectedSlides,
-  ).reduce(
+  const selectedSlideCount = Object.values(selectedSlides).reduce(
     (total, slides) => total + slides.length,
     0,
   );
@@ -113,9 +79,7 @@ const PresentationSections = ({
   const toggleExpanded = (sectionKey) => {
     setExpandedSections((current) =>
       current.includes(sectionKey)
-        ? current.filter(
-            (key) => key !== sectionKey,
-          )
+        ? current.filter((key) => key !== sectionKey)
         : [...current, sectionKey],
     );
   };
@@ -131,28 +95,20 @@ const PresentationSections = ({
   const areAllSlidesSelected = (section) => {
     const slides = getSectionSlides(section);
 
-    return (
-      slides.length === section.slideIds.length
-    );
+    return slides.length === section.slideIds.length;
   };
 
   const areSomeSlidesSelected = (section) => {
     const slides = getSectionSlides(section);
 
-    return (
-      slides.length > 0 &&
-      slides.length < section.slideIds.length
-    );
+    return slides.length > 0 && slides.length < section.slideIds.length;
   };
 
   /* ==========================================
      UPDATE SECTION
   ========================================== */
 
-  const updateSectionSelection = (
-    section,
-    slides,
-  ) => {
+  const updateSectionSelection = (section, slides) => {
     setSelectedSlides((current) => {
       const next = {
         ...current,
@@ -168,18 +124,14 @@ const PresentationSections = ({
     });
 
     setSelectedSections((current) => {
-      const exists = current.includes(
-        section.key,
-      );
+      const exists = current.includes(section.key);
 
       if (slides.length > 0 && !exists) {
         return [...current, section.key];
       }
 
       if (slides.length === 0 && exists) {
-        return current.filter(
-          (key) => key !== section.key,
-        );
+        return current.filter((key) => key !== section.key);
       }
 
       return current;
@@ -191,41 +143,25 @@ const PresentationSections = ({
   ========================================== */
 
   const toggleSection = (section) => {
-    const allSelected =
-      areAllSlidesSelected(section);
+    const allSelected = areAllSlidesSelected(section);
 
-    updateSectionSelection(
-      section,
-      allSelected
-        ? []
-        : [...section.slideIds],
-    );
+    updateSectionSelection(section, allSelected ? [] : [...section.slideIds]);
   };
 
   /* ==========================================
      TOGGLE SLIDE
   ========================================== */
 
-  const toggleSlide = (
-    section,
-    slideId,
-  ) => {
-    const currentSlides =
-      getSectionSlides(section);
+  const toggleSlide = (section, slideId) => {
+    const currentSlides = getSectionSlides(section);
 
-    const isSelected =
-      currentSlides.includes(slideId);
+    const isSelected = currentSlides.includes(slideId);
 
     const updatedSlides = isSelected
-      ? currentSlides.filter(
-          (id) => id !== slideId,
-        )
+      ? currentSlides.filter((id) => id !== slideId)
       : [...currentSlides, slideId];
 
-    updateSectionSelection(
-      section,
-      updatedSlides,
-    );
+    updateSectionSelection(section, updatedSlides);
   };
 
   /* ==========================================
@@ -236,18 +172,12 @@ const PresentationSections = ({
     const allSlides = {};
 
     SECTION_SLIDES.forEach((section) => {
-      allSlides[section.key] = [
-        ...section.slideIds,
-      ];
+      allSlides[section.key] = [...section.slideIds];
     });
 
     setSelectedSlides(allSlides);
 
-    setSelectedSections(
-      SECTION_SLIDES.map(
-        (section) => section.key,
-      ),
-    );
+    setSelectedSections(SECTION_SLIDES.map((section) => section.key));
   };
 
   /* ==========================================
@@ -265,10 +195,7 @@ const PresentationSections = ({
   ========================================== */
 
   const selectAllSlides = (section) => {
-    updateSectionSelection(
-      section,
-      [...section.slideIds],
-    );
+    updateSectionSelection(section, [...section.slideIds]);
   };
 
   /* ==========================================
@@ -276,15 +203,10 @@ const PresentationSections = ({
   ========================================== */
 
   const resetSlides = (section) => {
-    updateSectionSelection(
-      section,
-      [],
-    );
+    updateSectionSelection(section, []);
   };
 
-  const allSectionsSelected =
-    selectedSections.length ===
-    SECTION_SLIDES.length;
+  const allSectionsSelected = selectedSections.length === SECTION_SLIDES.length;
 
   return (
     <section>
@@ -323,9 +245,7 @@ const PresentationSections = ({
           </div>
 
           <p className="mt-1 text-xs text-[#9a9da3]">
-            Select sections and choose
-            individual slides for your
-            presentation.
+            Select sections and choose individual slides for your presentation.
           </p>
         </div>
 
@@ -334,10 +254,7 @@ const PresentationSections = ({
         <div className="flex items-center gap-2">
           <button
             type="button"
-            disabled={
-              disabled ||
-              allSectionsSelected
-            }
+            disabled={disabled || allSectionsSelected}
             onClick={selectAll}
             className="
               inline-flex
@@ -364,10 +281,7 @@ const PresentationSections = ({
 
           <button
             type="button"
-            disabled={
-              disabled ||
-              selectedSlideCount === 0
-            }
+            disabled={disabled || selectedSlideCount === 0}
             onClick={resetAll}
             className="
               inline-flex
@@ -398,24 +312,15 @@ const PresentationSections = ({
 
       <div className="space-y-2">
         {SECTION_SLIDES.map((section) => {
-          const expanded =
-            expandedSections.includes(
-              section.key,
-            );
+          const expanded = expandedSections.includes(section.key);
 
-          const allSelected =
-            areAllSlidesSelected(section);
+          const allSelected = areAllSlidesSelected(section);
 
-          const someSelected =
-            areSomeSlidesSelected(section);
+          const someSelected = areSomeSlidesSelected(section);
 
-          const selected =
-            selectedSections.includes(
-              section.key,
-            );
+          const selected = selectedSections.includes(section.key);
 
-          const sectionSelectedSlides =
-            getSectionSlides(section);
+          const sectionSelectedSlides = getSectionSlides(section);
 
           return (
             <div
@@ -445,11 +350,7 @@ const PresentationSections = ({
                   transition
                   hover:bg-[#fafbfc]
                 "
-                onClick={() =>
-                  toggleExpanded(
-                    section.key,
-                  )
-                }
+                onClick={() => toggleExpanded(section.key)}
               >
                 {/* TOP RIGHT CHECKBOX */}
 
@@ -485,32 +386,26 @@ const PresentationSections = ({
                       border
                       transition
                       ${
-                        allSelected ||
-                        someSelected
+                        allSelected || someSelected
                           ? "border-[#f47a32] bg-[#f47a32]"
                           : "border-[#cdd0d5] bg-white"
                       }
                     `}
                   >
                     {allSelected && (
-                      <Check
-                        size={13}
-                        strokeWidth={3}
-                        className="text-white"
-                      />
+                      <Check size={13} strokeWidth={3} className="text-white" />
                     )}
 
-                    {someSelected &&
-                      !allSelected && (
-                        <span
-                          className="
+                    {someSelected && !allSelected && (
+                      <span
+                        className="
                             h-[2px]
                             w-[9px]
                             rounded-full
                             bg-white
                           "
-                        />
-                      )}
+                      />
+                    )}
                   </span>
                 </button>
 
@@ -522,29 +417,16 @@ const PresentationSections = ({
                       className={`
                         text-sm
                         font-medium
-                        ${
-                          selected
-                            ? "text-[#f47a32]"
-                            : "text-[#37383c]"
-                        }
+                        ${selected ? "text-[#f47a32]" : "text-[#37383c]"}
                       `}
                     >
                       {section.label}
                     </p>
 
                     <p className="mt-0.5 text-[11px] text-[#9a9da3]">
-                      {section.slideIds.length}{" "}
-                      slides
-                      {sectionSelectedSlides.length >
-                        0 && (
-                        <>
-                          {" "}
-                          •{" "}
-                          {
-                            sectionSelectedSlides.length
-                          }{" "}
-                          selected
-                        </>
+                      {section.slideIds.length} slides
+                      {sectionSelectedSlides.length > 0 && (
+                        <> • {sectionSelectedSlides.length} selected</>
                       )}
                     </p>
                   </div>
@@ -572,10 +454,7 @@ const PresentationSections = ({
                     }
                   `}
                 >
-                  <ChevronDown
-                    size={17}
-                    strokeWidth={2.5}
-                  />
+                  <ChevronDown size={17} strokeWidth={2.5} />
                 </span>
               </div>
 
@@ -607,9 +486,7 @@ const PresentationSections = ({
                     <button
                       type="button"
                       disabled={disabled}
-                      onClick={() =>
-                        selectAllSlides(section)
-                      }
+                      onClick={() => selectAllSlides(section)}
                       className="
                         rounded-full
                         border
@@ -628,18 +505,14 @@ const PresentationSections = ({
                         disabled:opacity-50
                       "
                     >
-                      <span className="mr-1">
-                        ✓
-                      </span>
+                      <span className="mr-1">✓</span>
                       Select All
                     </button>
 
                     <button
                       type="button"
                       disabled={disabled}
-                      onClick={() =>
-                        resetSlides(section)
-                      }
+                      onClick={() => resetSlides(section)}
                       className="
                         rounded-full
                         border
@@ -658,9 +531,7 @@ const PresentationSections = ({
                         disabled:opacity-50
                       "
                     >
-                      <span className="mr-1">
-                        ×
-                      </span>
+                      <span className="mr-1">×</span>
                       Reset
                     </button>
                   </div>
@@ -678,25 +549,17 @@ const PresentationSections = ({
                       xl:grid-cols-6
                     "
                   >
-                    {section.slideIds.map(
-                      (slideId, index) => {
-                        const slideSelected =
-                          sectionSelectedSlides.includes(
-                            slideId,
-                          );
+                    {section.slideIds.map((slideId, index) => {
+                      const slideSelected =
+                        sectionSelectedSlides.includes(slideId);
 
-                        return (
-                          <button
-                            key={slideId}
-                            type="button"
-                            disabled={disabled}
-                            onClick={() =>
-                              toggleSlide(
-                                section,
-                                slideId,
-                              )
-                            }
-                            className={`
+                      return (
+                        <button
+                          key={slideId}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => toggleSlide(section, slideId)}
+                          className={`
                               group
                               relative
                               rounded-lg
@@ -711,9 +574,9 @@ const PresentationSections = ({
                                   : "border-transparent bg-transparent hover:border-[#e2e4e7] hover:bg-white"
                               }
                             `}
-                          >
-                            <div
-                              className={`
+                        >
+                          <div
+                            className={`
                                 relative
                                 aspect-[4/3]
                                 w-full
@@ -727,48 +590,35 @@ const PresentationSections = ({
                                     : "border-[#e2e4e7]"
                                 }
                               `}
-                            >
-                              <img
-                                src={imagePath(
-                                  slideId,
-                                )}
-                                alt={`${section.label} slide ${index + 1}`}
-                                loading="lazy"
-                                className="
+                          >
+                            <img
+                              src={imagePath(slideId)}
+                              alt={`${section.label} slide ${index + 1}`}
+                              loading="lazy"
+                              className="
                                   block
                                   h-full
                                   w-full
                                   object-contain
                                 "
-                                onError={(
-                                  event,
-                                ) => {
-                                  event.currentTarget.style.display =
-                                    "none";
+                              onError={(event) => {
+                                event.currentTarget.style.display = "none";
 
-                                  const fallback =
-                                    event
-                                      .currentTarget
-                                      .nextSibling;
+                                const fallback =
+                                  event.currentTarget.nextSibling;
 
-                                  if (
-                                    fallback
-                                  ) {
-                                    fallback.classList.remove(
-                                      "hidden",
-                                    );
+                                if (fallback) {
+                                  fallback.classList.remove("hidden");
 
-                                    fallback.classList.add(
-                                      "flex",
-                                    );
-                                  }
-                                }}
-                              />
+                                  fallback.classList.add("flex");
+                                }
+                              }}
+                            />
 
-                              {/* FALLBACK */}
+                            {/* FALLBACK */}
 
-                              <div
-                                className="
+                            <div
+                              className="
                                   absolute
                                   inset-0
                                   hidden
@@ -779,14 +629,14 @@ const PresentationSections = ({
                                   font-semibold
                                   text-[#9a9da3]
                                 "
-                              >
-                                Slide {index + 1}
-                              </div>
+                            >
+                              Slide {index + 1}
+                            </div>
 
-                              {/* SLIDE CHECKBOX */}
+                            {/* SLIDE CHECKBOX */}
 
-                              <span
-                                className={`
+                            <span
+                              className={`
                                   absolute
                                   right-1.5
                                   top-1.5
@@ -805,19 +655,19 @@ const PresentationSections = ({
                                       : "border-[#d5d7db] bg-white"
                                   }
                                 `}
-                              >
-                                {slideSelected && (
-                                  <Check
-                                    size={12}
-                                    strokeWidth={3}
-                                    className="text-white"
-                                  />
-                                )}
-                              </span>
-                            </div>
+                            >
+                              {slideSelected && (
+                                <Check
+                                  size={12}
+                                  strokeWidth={3}
+                                  className="text-white"
+                                />
+                              )}
+                            </span>
+                          </div>
 
-                            <p
-                              className={`
+                          <p
+                            className={`
                                 mt-1.5
                                 text-center
                                 text-[10px]
@@ -828,13 +678,12 @@ const PresentationSections = ({
                                     : "text-[#777b82]"
                                 }
                               `}
-                            >
-                              Slide {index + 1}
-                            </p>
-                          </button>
-                        );
-                      },
-                    )}
+                          >
+                            Slide {index + 1}
+                          </p>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
