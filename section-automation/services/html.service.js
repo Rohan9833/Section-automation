@@ -25,7 +25,7 @@ function updateHtml(
 
   const configString = JSON.stringify(presentationConfig);
 
-  content = content.replace("__PRESENTATION_CONFIG__", configString);
+  // Generated presentations use the shared master assets instead of copying them.  // Existing legacy presentations are left untouched by the controller.  if (!content.includes('<base href="/ppt-updated/"')) {    content = content.replace(      /<head>/i,      '<head>\\n    <base href="/ppt-updated/" />'    );  }  content = content.replace("__PRESENTATION_CONFIG__", configString);
 
   fs.writeFileSync(htmlPath, content, "utf8");
 
