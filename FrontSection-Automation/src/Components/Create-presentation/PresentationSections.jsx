@@ -57,6 +57,11 @@ const SECTION_SLIDES = [
     label: "Field Motivation",
     slideIds: [101],
   },
+  {
+    key: "doc-talk",
+    label: "DocTalk",
+    slideIds: [102],
+  },
 ];
 
 const PresentationSections = ({
