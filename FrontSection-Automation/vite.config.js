@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://digi-ppt.digilateral.com",
+        target: "http://localhost:2405",
         changeOrigin: true,
       }
     },
