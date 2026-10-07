@@ -26,12 +26,34 @@ function updateHtml(
 
   const configString = JSON.stringify(presentationConfig);
 
-  // Generated presentations use the shared master assets instead of copying them.  // Existing legacy presentations are left untouched by the controller.  if (!content.includes('<base href="/ppt-updated/"')) {    content = content.replace(      /<head>/i,      '<head>\\n    <base href="/ppt-updated/" />'    );  }  content = content.replace("__PRESENTATION_CONFIG__", configString);
+  /*
+   * New generated presentations contain only index.html.
+   * Their CSS, JS, images, thumbnails, slides and videos are served
+   * from the shared /ppt-updated/ directory.
+   *
+   * The <base> tag is critical here because all original PPT assets
+   * use relative paths such as "global.css", "slide1/..." and
+   * "global.js".
+   */
+  if (useSharedAssets) {
+    const sharedBaseTag = '<base href="/ppt-updated/" />';
+
+    if (!/<base\s+href=["']\/ppt-updated\//i.test(content)) {
+      content = content.replace(
+        /<head>/i,
+        `<head>\n    ${sharedBaseTag}`,
+      );
+    }
+  }
+
+  content = content.replace(
+    "__PRESENTATION_CONFIG__",
+    configString,
+  );
 
   fs.writeFileSync(htmlPath, content, "utf8");
 
   console.log("✅ Presentation configuration written to index.html");
-
   console.log(presentationConfig);
 }
 
