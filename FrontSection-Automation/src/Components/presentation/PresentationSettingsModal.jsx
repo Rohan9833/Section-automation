@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X, Check } from "lucide-react";
 
 const PresentationSettingsModal = ({ presentation, onClose, onSaved }) => {
-  const BACKEND_URL = "https://digi-ppt.digilateral.com";
+  const BACKEND_URL = "http://localhost:2405";
   const [active, setActive] = useState(true);
 
   const [expiration, setExpiration] = useState("never");
