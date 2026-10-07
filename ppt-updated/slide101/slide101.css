@@ -36,14 +36,16 @@
 
 .title3 {
   position: absolute;
-  top: 200px;
-  left: 100px;
+  top: 180px;
+  left: 112px;
   z-index: 2;
-  white-space: nowrap;
-  color: rgb(63, 63, 63);
+  width: 800px;
+  height: 450px;
 }
 
 .title3 video {
+  display: block;
   width: 800px;
-  height: auto;
+  height: 450px;
+  object-fit: contain;
 }
