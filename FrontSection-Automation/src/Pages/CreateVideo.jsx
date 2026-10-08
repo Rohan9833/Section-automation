@@ -5,7 +5,7 @@ import PresentationSettings from "../Components/Create-Video/PresentationSetting
 import Navbar from "../Components/Navbar";
 
 const API_BASE_URL = "/api";
-const VIDEO_BASE_URL = "http://localhost:2405";
+const VIDEO_BASE_URL = import.meta.env.VITE_PUBLIC_BASE_URL || "";
 
 const CreateVideo = () => {
   const [formData, setFormData] = useState({
@@ -46,10 +46,7 @@ const CreateVideo = () => {
     if (url.startsWith("http://") || url.startsWith("https://")) {
       // If backend accidentally returns the API domain,
       // convert it to the public video domain.
-      return url.replace(
-        "http://localhost:2405",
-        VIDEO_BASE_URL,
-      );
+      return url;
     }
 
     const cleanUrl = url.startsWith("/") ? url : `/${url}`;
