@@ -13,7 +13,7 @@ const TEMPLATE_DIR =
   process.env.PPT_TEMPLATE_DIR || path.join(__dirname, "../../ppt-updated");
 const LINKS_ROOT =
   process.env.PPT_LINKS_DIR || path.join(__dirname, "../../ppt-links");
-const PUBLIC_DOMAIN = process.env.PUBLIC_DOMAIN || "http://localhost:2405";
+const PUBLIC_DOMAIN = (process.env.PUBLIC_DOMAIN || "").replace(/\/$/, "");
 const ENABLE_NGINX = process.env.ENABLE_NGINX === "true";
 
 console.log("TEMPLATE_DIR:", TEMPLATE_DIR);
