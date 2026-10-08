@@ -8,7 +8,7 @@ import ZipFileUpload from "../Components/createZip/ZipFileUpload";
 import ZipSuccessModal from "../Components/createZip/ZipSuccessModal";
 import Navbar from "../Components/Navbar";
 
-const BACKEND_BASE_URL = "http://localhost:2405";
+const BACKEND_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const initialFormData = {
   companyName: "",
