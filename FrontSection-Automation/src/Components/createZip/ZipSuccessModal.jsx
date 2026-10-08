@@ -3,7 +3,7 @@ import { Check, Copy, Download, X } from "lucide-react";
 
 const ZipSuccessModal = ({ result, onClose }) => {
   const [copied, setCopied] = useState(false);
-  const backendUrl = "http://localhost:2405";
+  const backendUrl = import.meta.env.VITE_API_BASE_URL || "";
 
   if (!result) {
     return null;
