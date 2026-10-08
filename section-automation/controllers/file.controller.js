@@ -158,8 +158,7 @@ exports.uploadFiles = async (req, res) => {
     // -----------------------------------------------------
 
     const publicDomain =
-      process.env.PUBLIC_DOMAIN ||
-      "http://localhost:2405";
+      (process.env.PUBLIC_DOMAIN || "").replace(/\/$/, "");
 
     const url =
       `${publicDomain}/zip/` +
@@ -990,8 +989,7 @@ exports.getFileDashboardData =
           .lean();
 
       const publicDomain =
-        process.env.PUBLIC_DOMAIN ||
-        "http://localhost:2405";
+        (process.env.PUBLIC_DOMAIN || "").replace(/\/$/, "");
 
       const data =
         fileShares.map(
