@@ -85,7 +85,11 @@ pm2 start app.js --name section-automation
 pm2 save
 ```
 
-## 6. Try it
+## 6. PDF generation requirement
+
+The current repository does not contain a browser/PDF-generation dependency or a PDF route that can be validated from source alone. Do not assume PDF generation is production-ready. If the application generates PDFs through a browser, install the required browser/runtime on the server and configure its executable path through an environment variable. If it converts HTML/PPT documents with LibreOffice, install LibreOffice on the server and call it with a writable temporary/output directory. Validate one generated PDF end-to-end on the server before production rollout.
+
+## 7. Try it
 
 Open `http://<SERVER_IP>:3000` (or however you're reaching the app — put it
 behind its own nginx location too if you want a clean admin URL like
