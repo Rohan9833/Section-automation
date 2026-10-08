@@ -47,8 +47,10 @@ const pptLinkDir = path.join(
 // =========================================================
 
 const allowedOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
+  ...(process.env.FRONTEND_URLS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean),
 ];
 
 app.use(
@@ -148,7 +150,7 @@ app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "Server is running 🚀",
-    port: 2405,
+    port: Number(process.env.PORT || 2405),
     timestamp: new Date().toISOString(),
   });
 });
@@ -223,8 +225,10 @@ app.use(
 // SERVER
 // =========================================================
 
-app.listen(2405, "0.0.0.0", () => {
+const PORT = Number(process.env.PORT || 2405);
+
+app.listen(PORT, "0.0.0.0", () => {
   console.log(
-    "Server Running on port 2405"
+    `Server Running on port ${PORT}`
   );
 });
