@@ -25,3 +25,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets and runtime storage
+.env
+file-uploads/
+tmp-uploads/
+pdf-output/
+nginx-snippets/
+nginx-logs/
