@@ -15,6 +15,8 @@ const FILE_ROOT =
   process.env.FILE_UPLOAD_DIR ||
   path.join(__dirname, "../../file-uploads");
 
+fs.mkdirSync(FILE_ROOT, { recursive: true });
+
 // =========================================================
 // HELPERS
 // =========================================================
