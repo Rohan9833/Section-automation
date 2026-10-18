@@ -8,6 +8,8 @@ import {
   X,
   Copy,
   Check,
+  ArrowDownUp,
+  GripVertical,
 } from "lucide-react";
 
 import PresentationSettings from "./PresentationSettings";
@@ -79,6 +81,13 @@ const CreatePresentationForm = () => {
   const [existingLink, setExistingLink] = useState(null);
 
   const [checkingLink, setCheckingLink] = useState(false);
+
+  /* ==========================================
+     ALIGN SELECTED SLIDES
+  ========================================== */
+
+  const [showAlignPopup, setShowAlignPopup] = useState(false);
+  const [slideOrder, setSlideOrder] = useState([]);
 
   /* ==========================================
      SUBMIT STATE
@@ -284,6 +293,82 @@ url: `https://digilateral.com${data.url}`
   };
 
   /* ==========================================
+     BUILD THE SELECTED SLIDE ORDER
+  ========================================== */
+
+  const getSlideOrder = () => {
+    const ordered = [];
+    const seen = new Set();
+
+    selectedSections.forEach((sectionKey) => {
+      (selectedSlides[sectionKey] || []).forEach((slideId) => {
+        const key = String(slideId);
+        if (seen.has(key)) return;
+        seen.add(key);
+        ordered.push({
+          id: slideId,
+          sectionKey,
+          position: ordered.length + 1,
+        });
+      });
+    });
+
+    // Retain any selected slide group even if a section was not listed.
+    Object.entries(selectedSlides).forEach(([sectionKey, slides]) => {
+      (slides || []).forEach((slideId) => {
+        const key = String(slideId);
+        if (seen.has(key)) return;
+        seen.add(key);
+        ordered.push({
+          id: slideId,
+          sectionKey,
+          position: ordered.length + 1,
+        });
+      });
+    });
+
+    return ordered;
+  };
+
+  const handleOpenAlign = (event) => {
+    event.preventDefault();
+    setError("");
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    const currentOrder = getSlideOrder();
+    if (currentOrder.length === 0) {
+      setError("Please select at least one slide.");
+      return;
+    }
+
+    setSlideOrder(currentOrder);
+    setShowAlignPopup(true);
+  };
+
+  const handlePositionChange = (slideId, value) => {
+    const requestedPosition = Number(value);
+    if (!Number.isInteger(requestedPosition) || requestedPosition < 1) return;
+
+    setSlideOrder((current) => {
+      const fromIndex = current.findIndex((slide) => slide.id === slideId);
+      if (fromIndex < 0) return current;
+
+      const toIndex = Math.min(requestedPosition, current.length) - 1;
+      if (fromIndex === toIndex) return current;
+
+      const next = [...current];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      return next.map((slide, index) => ({ ...slide, position: index + 1 }));
+    });
+  };
+
+  /* ==========================================
      GET COMPLETE LINK
 
      IMPORTANT:
@@ -313,7 +398,7 @@ return `https://digilateral.com${cleanUrl}`;
      POST /api/url/generate
   ========================================== */
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event, slidesOverride = null) => {
     event.preventDefault();
 
     setError("");
@@ -339,7 +424,7 @@ return `https://digilateral.com${cleanUrl}`;
 
         section: selectedSections,
 
-        slides: selectedSlides,
+        slides: slidesOverride || selectedSlides,
 
         active: settings.isActive,
 
@@ -554,7 +639,7 @@ return `https://digilateral.com${cleanUrl}`;
           FORM
       ====================================== */}
 
-      <form onSubmit={handleSubmit} className="space-y-7">
+      <form onSubmit={handleOpenAlign} className="space-y-7">
         {/* ======================================
             ERROR
         ====================================== */}
@@ -879,13 +964,150 @@ return `https://digilateral.com${cleanUrl}`;
               </>
             ) : (
               <>
-                <FilePlus2 size={18} />
-                Generate Presentation
+                <ArrowDownUp size={18} />
+                Align Slides
               </>
             )}
           </button>
         </div>
       </form>
+
+      {/* ==================================================
+          ALIGN SLIDES POPUP
+      ================================================== */}
+
+      {showAlignPopup && (
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 px-3 py-4 backdrop-blur-[3px] sm:px-5"
+          onClick={() => setShowAlignPopup(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="align-slides-title"
+            className="flex max-h-[min(88vh,900px)] w-full max-w-[820px] flex-col overflow-hidden rounded-2xl border border-[#ececef] bg-white shadow-[0_24px_80px_rgba(0,0,0,0.22)]"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-[#ececef] px-5 py-4 sm:px-6">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#fff0e7] text-[#f47a32]">
+                  <ArrowDownUp size={20} />
+                </div>
+                <div>
+                  <h2 id="align-slides-title" className="text-base font-semibold text-[#303238]">
+                    Align selected slides
+                  </h2>
+                  <p className="mt-0.5 text-xs text-[#777b82]">
+                    Choose the order in which slides should appear.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAlignPopup(false)}
+                aria-label="Close slide alignment"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-[#777b82] transition hover:bg-[#f5f6f8] hover:text-[#303238]"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="border-b border-[#ececef] bg-[#fafbfc] px-5 py-3 sm:px-6">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-xs text-[#55585d]">
+                  <span className="font-semibold text-[#303238]">{slideOrder.length} slides selected</span>
+                  <span className="mx-2 text-[#c5c8ce]">•</span>
+                  Use the position field to move a slide in the sequence.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSlideOrder((current) => [...current].sort((a, b) => a.position - b.position).map((slide, index) => ({ ...slide, position: index + 1 })))}
+                  className="text-xs font-semibold text-[#f47a32] hover:underline"
+                >
+                  Reset order
+                </button>
+              </div>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-6">
+              <div className="space-y-2">
+                {slideOrder.map((slide, index) => (
+                  <div
+                    key={String(slide.id) + '-' + slide.sectionKey}
+                    className="flex items-center gap-3 rounded-xl border border-[#e7e8eb] bg-white p-3 transition hover:border-[#f4c3a3] sm:gap-4 sm:p-4"
+                  >
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f6f8] text-[#92969e]">
+                      <GripVertical size={18} />
+                    </div>
+                    <div className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#e4e6e9] bg-[#f2f3f5] sm:h-12 sm:w-[68px]">
+                      <img
+                        src={`/thumbnail/${slide.id}.png`}
+                        alt={`Slide ${slide.id} thumbnail`}
+                        className="h-full w-full object-contain"
+                        onError={(event) => { event.currentTarget.style.display = "none"; }}
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-[#303238]">Slide {slide.id}</p>
+                      <p className="mt-0.5 truncate text-xs text-[#8b8f97]">{slide.sectionKey}</p>
+                    </div>
+                    <label className="flex shrink-0 items-center gap-2 text-xs font-medium text-[#55585d]">
+                      <span className="hidden sm:inline">Position</span>
+                      <select
+                        aria-label={`Position for slide ${slide.id}`}
+                        value={index + 1}
+                        onChange={(event) => handlePositionChange(slide.id, event.target.value)}
+                        className="h-9 w-[76px] rounded-lg border border-[#d5d7db] bg-white px-2 text-sm text-[#303238] outline-none focus:border-[#f47a32] focus:ring-2 focus:ring-[#f47a32]/15"
+                      >
+                        {slideOrder.map((_, positionIndex) => (
+                          <option key={positionIndex + 1} value={positionIndex + 1}>
+                            {positionIndex + 1}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <div className="hidden w-7 text-right text-xs font-semibold tabular-nums text-[#a0a3aa] sm:block">
+                      #{index + 1}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 border-t border-[#ececef] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+              <p className="text-[11px] leading-4 text-[#8b8f97]">Frontend preview only. The selected order is not yet sent to the backend.</p>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => setShowAlignPopup(false)}
+                  className="rounded-lg border border-[#d5d7db] bg-white px-4 py-2.5 text-xs font-semibold text-[#55585d] transition hover:bg-[#f5f6f8] disabled:opacity-60"
+                >
+                  Back to selection
+                </button>
+                <button
+                  type="button"
+                  disabled={submitting || slideOrder.length === 0}
+                  onClick={() => {
+                    const orderedSlides = {};
+                    slideOrder.forEach((slide) => {
+                      if (!orderedSlides[slide.sectionKey]) orderedSlides[slide.sectionKey] = [];
+                      orderedSlides[slide.sectionKey].push(slide.id);
+                    });
+                    setSelectedSlides(orderedSlides);
+                    setShowAlignPopup(false);
+                    handleSubmit({ preventDefault: () => {} }, orderedSlides);
+                  }}
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f47a32] px-4 py-2.5 text-xs font-semibold text-white shadow-[0_2px_8px_rgba(244,122,50,0.18)] transition hover:bg-[#e86d28] disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {submitting ? <LoaderCircle size={15} className="animate-spin" /> : <FilePlus2 size={15} />}
+                  Confirm & Generate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ==================================================
           SUCCESS POPUP
