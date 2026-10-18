@@ -312,6 +312,53 @@ function buildPresentation(config) {
     });
   });
 
+  // Honor the explicit slide order supplied by the presentation creator.
+  // Group only adjacent slides from the same section, allowing slides from
+  // different sections to be interleaved while keeping existing renderers.
+  if (Array.isArray(config.slideOrder) && config.slideOrder.length > 0) {
+    const orderedPresentation = [];
+
+    config.slideOrder.forEach(function (item) {
+      if (!item || item.id === undefined || item.sectionKey === undefined) {
+        return;
+      }
+
+      const sectionId = sectionMap[item.sectionKey];
+      if (!sectionId || !sections[sectionId]) {
+        console.warn("Unknown section in explicit slide order:", item.sectionKey);
+        return;
+      }
+
+      const slideId = Number(item.id);
+      const availableSlides = sections[sectionId].slides || [];
+      const selectedForSection = selectedSlides[item.sectionKey];
+
+      if (
+        !Number.isFinite(slideId) ||
+        !availableSlides.includes(slideId) ||
+        !Array.isArray(selectedForSection) ||
+        !selectedForSection.map(Number).includes(slideId)
+      ) {
+        console.warn("Skipping invalid slide in explicit order:", item);
+        return;
+      }
+
+      const lastGroup = orderedPresentation[orderedPresentation.length - 1];
+      if (lastGroup && lastGroup.sectionId === sectionId) {
+        lastGroup.slides.push(slideId);
+      } else {
+        orderedPresentation.push({ sectionId: sectionId, slides: [slideId] });
+      }
+    });
+
+    if (orderedPresentation.length > 0) {
+      console.log("Final presentation order (custom):", orderedPresentation);
+      return orderedPresentation;
+    }
+
+    console.warn("Custom slide order contained no valid slides; using section order.");
+  }
+
   console.log("Final presentation order:", presentation);
 
   return presentation;
