@@ -668,6 +668,10 @@ const PresentationSections = ({
                                   h-full
                                   w-full
                                   object-contain
+                                  transition-transform
+                                  duration-200
+                                  ease-out
+                                  group-hover:scale-[1.06]
                                 "
                               onError={(event) => {
                                 event.currentTarget.style.display = "none";
