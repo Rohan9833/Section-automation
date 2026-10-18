@@ -13,7 +13,7 @@ const TEMPLATE_DIR =
   process.env.PPT_TEMPLATE_DIR || path.join(__dirname, "../../ppt-updated");
 const LINKS_ROOT =
   process.env.PPT_LINKS_DIR || path.join(__dirname, "../../ppt-links");
-const PUBLIC_DOMAIN = process.env.PUBLIC_DOMAIN || "http://localhost:2405";
+const PUBLIC_DOMAIN = (process.env.PUBLIC_DOMAIN || "").replace(/\/$/, "");
 const ENABLE_NGINX = process.env.ENABLE_NGINX === "true";
 
 console.log("TEMPLATE_DIR:", TEMPLATE_DIR);
@@ -183,44 +183,32 @@ exports.generateUrl = async (req, res) => {
     // Existing presentations that already contain global.js are
     // legacy self-contained copies and are intentionally untouched.
     // ---------------------------------------------------------
-    const htmlPath = path.join(targetDir, "index.html");
-    const legacyPresentation =
-      fs.existsSync(htmlPath) &&
-      fs.existsSync(path.join(targetDir, "global.js"));
+const htmlPath = path.join(targetDir, "index.html");
 
-    if (legacyPresentation) {
-      console.log(
-        "Existing legacy presentation detected; keeping its assets.",
-      );
-    } else {
-      fs.mkdirSync(targetDir, { recursive: true });
+fs.mkdirSync(targetDir, { recursive: true });
 
-      // Refresh only the tiny index.html. Shared CSS/JS/media are never copied.
-      fs.copyFileSync(
-        path.join(TEMPLATE_DIR, "index.html"),
-        htmlPath,
-      );
+// Always use the lightweight shared-asset architecture.
+// Only index.html belongs inside the generated presentation folder.
+fs.copyFileSync(
+  path.join(TEMPLATE_DIR, "index.html"),
+  htmlPath,
+);
 
-      console.log(
-        fs.existsSync(htmlPath)
-          ? "Created/refreshed lightweight shared-asset presentation:"
-          : "Created lightweight shared-asset presentation:",
-        targetDir,
-      );
-    }
-
+console.log(
+  "Created/refreshed lightweight shared-asset presentation:",
+  targetDir,
+);
     // Bake only this presentation's configuration into index.html.
-    updateHtml(
-      selectedSections,
-      slides,
-      targetDir,
-      companySlug,
-      divisionSlug,
-      usernameSlug,
-      projectSlug,
-      !legacyPresentation,
-    );
-
+updateHtml(
+  selectedSections,
+  slides,
+  targetDir,
+  companySlug,
+  divisionSlug,
+  usernameSlug,
+  projectSlug,
+  true,
+);
     updateJs(selectedSections, targetDir);
 
     const existingPresentation = await Presentation.findOne({
