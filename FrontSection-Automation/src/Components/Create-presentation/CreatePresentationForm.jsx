@@ -13,7 +13,7 @@ import {
 import PresentationSettings from "./PresentationSettings";
 import PresentationSections from "./PresentationSections";
 
-const API_BASE_URL = "http://localhost:2405";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 const inputClass = `
   h-11
@@ -201,7 +201,7 @@ const CreatePresentationForm = () => {
 
         if (data?.exists) {
           setExistingLink({
-            url: `${API_BASE_URL}${data.url}`
+url: `https://digilateral.com${data.url}`
           });
           setShowExistingPopup(true);
         } else {
@@ -304,7 +304,7 @@ const CreatePresentationForm = () => {
     const cleanUrl = url.startsWith("/") ? url : `/${url}`;
 
     // Use backend/API base URL instead of frontend origin
-    return `${API_BASE_URL}${cleanUrl}`;
+return `https://digilateral.com${cleanUrl}`;
   };
 
   /* ==========================================
