@@ -88,6 +88,16 @@ const CreatePresentationForm = () => {
 
   const [showAlignPopup, setShowAlignPopup] = useState(false);
   const [slideOrder, setSlideOrder] = useState([]);
+  const [alignHoverPreview, setAlignHoverPreview] = useState(null);
+
+  const showAlignSlidePreview = (event, slide) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = 420;
+    const height = 330;
+    const left = Math.max(8, Math.min(rect.right + 12, window.innerWidth - width - 8));
+    const top = Math.max(8, Math.min(rect.top, window.innerHeight - height - 8));
+    setAlignHoverPreview({ src: `/thumbnail/${slide.id}.png`, alt: `Slide ${slide.id} preview`, left, top });
+  };
 
   /* ==========================================
      SUBMIT STATE
@@ -1043,7 +1053,11 @@ return `https://digilateral.com${cleanUrl}`;
                     <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#f5f6f8] text-[#92969e]">
                       <GripVertical size={18} />
                     </div>
-                    <div className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#e4e6e9] bg-[#f2f3f5] sm:h-12 sm:w-[68px]">
+                    <div
+                      className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-md border border-[#e4e6e9] bg-[#f2f3f5] sm:h-12 sm:w-[68px]"
+                      onMouseEnter={(event) => showAlignSlidePreview(event, slide)}
+                      onMouseLeave={() => setAlignHoverPreview(null)}
+                    >
                       <img
                         src={`/thumbnail/${slide.id}.png`}
                         alt={`Slide ${slide.id} thumbnail`}
@@ -1110,6 +1124,16 @@ return `https://digilateral.com${cleanUrl}`;
               </div>
             </div>
           </div>
+        </div>
+      )}
+
+      {alignHoverPreview && (
+        <div
+          className="pointer-events-none fixed z-[200] flex h-[330px] w-[420px] items-center justify-center rounded-xl border border-[#d9dce1] bg-white p-2 shadow-[0_18px_55px_rgba(0,0,0,0.28)]"
+          style={{ left: alignHoverPreview.left, top: alignHoverPreview.top }}
+          aria-hidden="true"
+        >
+          <img src={alignHoverPreview.src} alt={alignHoverPreview.alt} className="h-full w-full rounded-lg object-contain" />
         </div>
       )}
 
