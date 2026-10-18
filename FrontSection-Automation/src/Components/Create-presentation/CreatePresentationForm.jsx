@@ -400,7 +400,7 @@ return `https://digilateral.com${cleanUrl}`;
      POST /api/url/generate
   ========================================== */
 
-  const handleSubmit = async (event, slidesOverride = null) => {
+  const handleSubmit = async (event, slidesOverride = null, slideOrderOverride = null) => {
     event.preventDefault();
 
     setError("");
@@ -427,6 +427,8 @@ return `https://digilateral.com${cleanUrl}`;
         section: selectedSections,
 
         slides: slidesOverride || selectedSlides,
+
+        slideOrder: Array.isArray(slideOrderOverride) ? slideOrderOverride : null,
 
         active: settings.isActive,
 
@@ -1077,7 +1079,7 @@ return `https://digilateral.com${cleanUrl}`;
             </div>
 
             <div className="flex flex-col-reverse gap-2 border-t border-[#ececef] bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-              <p className="text-[11px] leading-4 text-[#8b8f97]">Frontend preview only. The selected order is not yet sent to the backend.</p>
+              <p className="text-[11px] leading-4 text-[#8b8f97]">Slides will be generated in the order shown above.</p>
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
@@ -1098,7 +1100,7 @@ return `https://digilateral.com${cleanUrl}`;
                     });
                     setSelectedSlides(orderedSlides);
                     setShowAlignPopup(false);
-                    handleSubmit({ preventDefault: () => {} }, orderedSlides);
+                    handleSubmit({ preventDefault: () => {} }, orderedSlides, slideOrder);
                   }}
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f47a32] px-4 py-2.5 text-xs font-semibold text-white shadow-[0_2px_8px_rgba(244,122,50,0.18)] transition hover:bg-[#e86d28] disabled:cursor-not-allowed disabled:opacity-60"
                 >
