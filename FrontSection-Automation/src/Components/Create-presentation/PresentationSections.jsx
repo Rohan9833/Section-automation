@@ -130,6 +130,16 @@ const PresentationSections = ({
   disabled = false,
 }) => {
   const [expandedSections, setExpandedSections] = useState([]);
+  const [hoverPreview, setHoverPreview] = useState(null);
+
+  const showSlidePreview = (event, slideId, alt) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const width = 420;
+    const height = 330;
+    const left = Math.max(8, Math.min(rect.right + 12, window.innerWidth - width - 8));
+    const top = Math.max(8, Math.min(rect.top, window.innerHeight - height - 8));
+    setHoverPreview({ src: imagePath(slideId), alt, left, top });
+  };
 
   const selectedSlideCount = Object.values(selectedSlides).reduce(
     (total, slides) => total + slides.length,
@@ -627,6 +637,8 @@ const PresentationSections = ({
                           type="button"
                           disabled={disabled}
                           onClick={() => toggleSlide(section, slideId)}
+                          onMouseEnter={(event) => showSlidePreview(event, slideId, `${section.label} slide ${index + 1}`)}
+                          onMouseLeave={() => setHoverPreview(null)}
                           className={`
                               group
                               relative
@@ -763,6 +775,15 @@ const PresentationSections = ({
           );
         })}
       </div>
+      {hoverPreview && (
+        <div
+          className="pointer-events-none fixed z-[200] flex h-[330px] w-[420px] items-center justify-center rounded-xl border border-[#d9dce1] bg-white p-2 shadow-[0_18px_55px_rgba(0,0,0,0.28)]"
+          style={{ left: hoverPreview.left, top: hoverPreview.top }}
+          aria-hidden="true"
+        >
+          <img src={hoverPreview.src} alt={hoverPreview.alt} className="h-full w-full rounded-lg object-contain" />
+        </div>
+      )}
     </section>
   );
 };
