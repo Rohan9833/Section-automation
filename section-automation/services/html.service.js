@@ -10,6 +10,7 @@ function updateHtml(
   usernameSlug,
   projectSlug,
   useSharedAssets = true,
+  slideOrder = null,
 ) {
   const htmlPath = path.join(baseDir, "index.html");
 
@@ -18,6 +19,7 @@ function updateHtml(
   const presentationConfig = {
     sections: selectedSections || [],
     slides: selectedSlides || {},
+    slideOrder: Array.isArray(slideOrder) ? slideOrder : [],
     companySlug,
     divisionSlug,
     usernameSlug,
