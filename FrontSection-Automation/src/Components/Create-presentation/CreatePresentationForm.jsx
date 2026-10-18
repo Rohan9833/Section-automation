@@ -1047,7 +1047,7 @@ return `https://digilateral.com${cleanUrl}`;
                       <img
                         src={`/thumbnail/${slide.id}.png`}
                         alt={`Slide ${slide.id} thumbnail`}
-                        className="h-full w-full object-contain"
+                        className="h-full w-full object-contain transition-transform duration-200 ease-out hover:scale-[1.08]"
                         onError={(event) => { event.currentTarget.style.display = "none"; }}
                       />
                     </div>
