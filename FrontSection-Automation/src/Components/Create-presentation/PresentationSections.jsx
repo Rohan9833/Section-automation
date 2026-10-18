@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { Check, ChevronDown, RotateCcw } from "lucide-react";
 
+// ⚠️ Keep these slideIds in sync with `sections` in the player script.
+// Every ID listed here MUST also be listed there, or the backend will
+// drop the user's selection and fall back to the whole section.
 const SECTION_SLIDES = [
   {
     key: "intro",
     label: "Introduction",
-    slideIds: [1, 2, 3, 4],
+    slideIds: [1, 2, 3, 4, 119, 120, 121, 122, 123, 124],
   },
   {
     key: "brand",
@@ -15,7 +18,7 @@ const SECTION_SLIDES = [
   {
     key: "videos",
     label: "Videos & Animation",
-    slideIds: [8, 9, 10, 11, 12, 13, 14, 15, 16],
+    slideIds: [8, 9, 10, 11, 12, 13, 133, 15, 134],
   },
   {
     key: "personalized",
@@ -40,12 +43,7 @@ const SECTION_SLIDES = [
   {
     key: "games",
     label: "Games",
-    slideIds: [41, 42, 43, 44],
-  },
-  {
-    key: "ai",
-    label: "Ai Activities",
-    slideIds: [99], // These IDs must match your image filenames: 57.png, 58.png, 59.png
+    slideIds: [41, 42, 43, 44, 138],
   },
   {
     key: "product-advertisement",
@@ -70,12 +68,12 @@ const SECTION_SLIDES = [
   {
     key: "doc-talk-quiz",
     label: "DocTalkQuiz",
-    slideIds: [104],
+    slideIds: [117, 104],
   },
   {
     key: "calendar-me",
     label: "CalendarME",
-    slideIds: [105, 106, 107],
+    slideIds: [105, 127, 128],
   },
   {
     key: "leaflets",
@@ -85,8 +83,43 @@ const SECTION_SLIDES = [
   {
     key: "comic-book",
     label: "Comic Book",
-    slideIds: [109],
+    slideIds: [125, 126, 109],
   },
+  {
+    key: "in-clinic-engagement",
+    label: "In-clinic Engagement",
+    slideIds: [110, 118],
+  },
+  {
+    key: "activa",
+    label: "ActiVa",
+    slideIds: [115, 114, 113, 112, 111, 116],
+  },
+  {
+    key: "med-assist",
+    label: "MedAssist",
+    slideIds: [130],
+  },
+  {
+    key: "e-detailer",
+    label: "E-Detailer",
+    slideIds: [135, 136],
+  },
+  {
+    key: "ai-studio",
+    label: "AI Studio",
+    slideIds: [131, 132],
+  },
+  {
+    key: "i-create",
+    label: "I-Create",
+    slideIds: [140, 141, 142],
+  },
+  // {
+  //   key: "demo",
+  //   label: "Demo",
+  //   slideIds: [119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144],
+  // },
 ];
 
 const PresentationSections = ({
