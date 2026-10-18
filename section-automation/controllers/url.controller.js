@@ -126,6 +126,7 @@ exports.generateUrl = async (req, res) => {
       companyName,
       section,
       slides,
+      slideOrder,
       divisionName,
       projectName,
       active,
@@ -208,6 +209,7 @@ updateHtml(
   usernameSlug,
   projectSlug,
   true,
+  slideOrder,
 );
     updateJs(selectedSections, targetDir);
 
