@@ -29,16 +29,15 @@ function updateHtml(
   /*
    * New generated presentations contain only index.html.
    * Their CSS, JS, images, thumbnails, slides and videos are served
-   * from the shared /ppt-updated/ directory.
+   * from the shared /ppt-assets/ directory.
    *
    * The <base> tag is critical here because all original PPT assets
    * use relative paths such as "global.css", "slide1/..." and
    * "global.js".
    */
   if (useSharedAssets) {
-    const sharedBaseTag = '<base href="/ppt-updated/" />';
-
-    if (!/<base\s+href=["']\/ppt-updated\//i.test(content)) {
+	const sharedBaseTag = '<base href="/ppt-assets/" />';
+	if (!/<base\s+href=["']\/ppt-assets\//i.test(content)) {
       content = content.replace(
         /<head>/i,
         `<head>\n    ${sharedBaseTag}`,
