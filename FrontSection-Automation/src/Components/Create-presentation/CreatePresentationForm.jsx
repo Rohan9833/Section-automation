@@ -350,12 +350,14 @@ url: `https://digilateral.com${data.url}`
     setShowAlignPopup(true);
   };
 
-  const handlePositionChange = (slideId, value) => {
+  const handlePositionChange = (slideId, sectionKey, value) => {
     const requestedPosition = Number(value);
     if (!Number.isInteger(requestedPosition) || requestedPosition < 1) return;
 
     setSlideOrder((current) => {
-      const fromIndex = current.findIndex((slide) => slide.id === slideId);
+      const fromIndex = current.findIndex(
+        (slide) => slide.id === slideId && slide.sectionKey === sectionKey,
+      );
       if (fromIndex < 0) return current;
 
       const toIndex = Math.min(requestedPosition, current.length) - 1;
@@ -1056,7 +1058,7 @@ return `https://digilateral.com${cleanUrl}`;
                       <select
                         aria-label={`Position for slide ${slide.id}`}
                         value={index + 1}
-                        onChange={(event) => handlePositionChange(slide.id, event.target.value)}
+                        onChange={(event) => handlePositionChange(slide.id, slide.sectionKey, event.target.value)}
                         className="h-9 w-[76px] rounded-lg border border-[#d5d7db] bg-white px-2 text-sm text-[#303238] outline-none focus:border-[#f47a32] focus:ring-2 focus:ring-[#f47a32]/15"
                       >
                         {slideOrder.map((_, positionIndex) => (
