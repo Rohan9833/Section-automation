@@ -12,12 +12,19 @@ var currentContentId = parseInt(localStorage.getItem("currentcontent"));
 // ========================================
 // SECTION CONFIGURATION
 // ========================================
+//
+// ⚠️ IMPORTANT: The `slides` arrays below MUST stay in sync with
+// `SECTION_SLIDES` in PresentationSections.jsx.
+// If the frontend allows a user to select a slide that is not
+// listed here, the selection will be filtered out and (before the
+// fix in buildPresentation) the whole section would silently render.
+//
 
 const sections = {
   introduction: {
     id: "introduction",
     name: "Introduction",
-    slides: [1, 2, 3, 4],
+    slides: [1, 2, 3, 4, 119, 120, 121, 122, 123, 124],
     isCommon: true,
   },
 
@@ -30,7 +37,9 @@ const sections = {
   videosAnimation: {
     id: "videosAnimation",
     name: "Videos & Animation",
-    slides: [8, 9, 10, 11, 12, 13, 14, 15, 16],
+    // was [8, 9, 10, 11, 12, 13, 14, 15, 16] — 14 and 16 have no renderer
+    // and the frontend never exposes them; 133 and 134 were missing.
+    slides: [8, 9, 10, 11, 12, 13, 133, 15, 134],
   },
 
   personalizedVideo: {
@@ -60,7 +69,8 @@ const sections = {
   games: {
     id: "games",
     name: "Games",
-    slides: [41, 42, 43, 44],
+    // was [41, 42, 43, 44, 138, 139] — 139 is not exposed by the UI.
+    slides: [41, 42, 43, 44, 138],
   },
 
   extraSection: {
@@ -91,12 +101,14 @@ const sections = {
   docTalkQuiz: {
     id: "docTalkQuiz",
     name: "DocTalkQuiz",
-    slides: [104],
+    // order aligned with the frontend
+    slides: [117, 104],
   },
   calendarME: {
     id: "calendarME",
     name: "CalendarME",
-    slides: [105, 106, 107],
+    // was [105, 106, 107] — the UI actually exposes 105, 127, 128.
+    slides: [105, 127, 128],
   },
   leaflets: {
     id: "leaflets",
@@ -106,7 +118,48 @@ const sections = {
   comicBook: {
     id: "comicBook",
     name: "Comic Book",
-    slides: [109],
+    // was [109] — the UI also exposes 125 and 126.
+    slides: [125, 126, 109],
+  },
+
+  inClinicEngagement: {
+    id: "inClinicEngagement",
+    name: "In-clinic Engagement",
+    slides: [110, 118],
+  },
+  activa: {
+    id: "activa",
+    name: "ActiVa",
+    // order aligned with the frontend
+    slides: [115, 114, 113, 112, 111, 116],
+  }, medAssist: {
+    id: "medAssist",
+    name: "MedAssist",
+    slides: [130],
+  },
+
+  eDetailer: {
+    id: "eDetailer",
+    name: "E-Detailer",
+    slides: [135, 136],
+  },
+
+  aiStudio: {
+    id: "aiStudio",
+    name: "AI Studio",
+    slides: [131, 132],
+  },
+
+  iCreate: {
+    id: "iCreate",
+    name: "I-Create",
+    slides: [140, 141, 142],
+  },
+
+  demo: {
+    id: "demo",
+    name: "Demo",
+    slides: Array.from({ length: 26 }, (_, i) => 119 + i),
   },
 };
 
@@ -122,8 +175,32 @@ function normalizeRequest(request) {
   return [];
 }
 
+// function buildPresentation(config) {
+//   const requestedSections = config.sections || [];
+//   const selectedSlides = config.slides || {};
+//
+//   ... (kept for reference) ...
+// }
+
+/**
+ * Build the ordered list of sections/slides to present.
+ *
+ * Rules:
+ *  - If the user explicitly selected slides for a section, ONLY those slides
+ *    are used. Unknown slide IDs are dropped with a warning, but we never
+ *    silently fall back to the full section.
+ *  - If no per-slide selection is provided for a section (undefined / empty
+ *    array), the whole section is used.
+ *  - If every explicitly selected slide is unknown, the section is skipped
+ *    entirely (rather than expanding to the whole section).
+ */
 function buildPresentation(config) {
-  const requestedSections = config.sections || [];
+  const requestedSections = Array.isArray(config.sections)
+    ? config.sections
+    : typeof config.sections === "string"
+      ? [config.sections]
+      : [];
+
   const selectedSlides = config.slides || {};
 
   const sectionMap = {
@@ -144,75 +221,98 @@ function buildPresentation(config) {
     "calendar-me": "calendarME",
     leaflets: "leaflets",
     "comic-book": "comicBook",
+    "in-clinic-engagement": "inClinicEngagement",
+    activa: "activa",
+    "med-assist": "medAssist",
+    "e-detailer": "eDetailer",
+    "ai-studio": "aiStudio",
+    "i-create": "iCreate",
+    demo: "demo",
   };
 
   const presentation = [];
 
-  const hasIntroduction = requestedSections.includes("intro");
-
-  // ========================================
-  // INTRODUCTION
-  // ========================================
-
-  if (hasIntroduction) {
-    // User selected Introduction.
-    // Show selected Introduction slides.
-
-    const introSlides = (selectedSlides.intro || [])
-      .map(Number)
-      .filter(function (slideId) {
-        return sections.introduction.slides.includes(slideId);
-      });
-
-    presentation.push({
-      sectionId: "introduction",
-      slides:
-        introSlides.length > 0 ? introSlides : sections.introduction.slides,
-    });
-  } else {
-    // Introduction wasn't selected.
-    // Always show only Introduction slide 1.
-
-    presentation.push({
-      sectionId: "introduction",
-      slides: [sections.introduction.slides[0]],
-    });
-  }
-
-  // ========================================
-  // OTHER SECTIONS
-  // ========================================
-
   requestedSections.forEach(function (requestedSection) {
-    if (requestedSection === "intro") {
-      return;
-    }
-
     const sectionId = sectionMap[requestedSection];
 
-    if (!sectionId) {
+    if (!sectionId || !sections[sectionId]) {
       console.warn("Unknown requested section:", requestedSection);
       return;
     }
 
-    const availableSlides = sections[sectionId].slides;
+    const availableSlides = sections[sectionId].slides || [];
 
-    const requestedSlides = (selectedSlides[requestedSection] || [])
-      .map(Number)
-      .filter(function (slideId) {
+    const rawSelection = selectedSlides[requestedSection];
+
+    const hasExplicitSelection =
+      Array.isArray(rawSelection) && rawSelection.length > 0;
+
+    let finalSlides;
+
+    if (hasExplicitSelection) {
+      // ------------------------------------------
+      // User explicitly picked individual slides.
+      // Honour that choice — never expand to the
+      // full section just because some IDs were
+      // dropped.
+      // ------------------------------------------
+
+      const requestedSlides = rawSelection.map(Number);
+
+      const validSlides = requestedSlides.filter(function (slideId) {
         return availableSlides.includes(slideId);
       });
 
-    // If section was selected but no individual
-    // slides were selected, use all slides.
-    const finalSlides =
-      requestedSlides.length > 0 ? requestedSlides : availableSlides;
+      if (validSlides.length === 0) {
+        console.warn(
+          "Section '" +
+            requestedSection +
+            "' was given slides " +
+            JSON.stringify(requestedSlides) +
+            " but none exist for that section. Available: " +
+            JSON.stringify(availableSlides) +
+            ". Skipping section.",
+        );
+        return;
+      }
+
+      if (validSlides.length !== requestedSlides.length) {
+        const dropped = requestedSlides.filter(function (slideId) {
+          return !availableSlides.includes(slideId);
+        });
+
+        console.warn(
+          "Section '" +
+            requestedSection +
+            "' dropped unknown slide IDs: " +
+            JSON.stringify(dropped) +
+            ". Available: " +
+            JSON.stringify(availableSlides) +
+            ".",
+        );
+      }
+
+      finalSlides = validSlides;
+    } else {
+      // ------------------------------------------
+      // No per-slide selection provided:
+      // the whole section is intended.
+      // ------------------------------------------
+      finalSlides = availableSlides.slice();
+    }
+
+    if (finalSlides.length === 0) {
+      console.warn("No slides found for section:", requestedSection);
+      return;
+    }
 
     presentation.push({
       sectionId: sectionId,
       slides: finalSlides,
     });
   });
+
+  console.log("Final presentation order:", presentation);
 
   return presentation;
 }
@@ -611,6 +711,32 @@ function set_pg_content(sectionName, slideId) {
         content =
           '<link rel="stylesheet" type="text/css" href="slide4/SlideNew4.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>They TRUST Us</p></div>  <div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div> <div class="title3" class="frameopen"><img src="slide4/Picture1.png"></div>';
         break;
+
+      // ----------------------------------------
+      // Introduction Additional Slides (119-124)
+      // ----------------------------------------
+
+      case 119:
+      case 120:
+      case 121:
+      case 122:
+      case 123:
+      case 124:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1" class="frameopen"><p>Introduction</p></div>' +
+          '<div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3" class="frameopen"><img src="slide' +
+          slideId +
+          '/1.png" alt="Introduction slide ' +
+          slideId +
+          '"/></div>';
+        break;
     }
   } else if (sectionName === "brandCommunication") {
     switch (slideId) {
@@ -652,7 +778,7 @@ function set_pg_content(sectionName, slideId) {
     `;
         break;
       // ----------------------------------------
-      // BBrand Communication & Creatives 2
+      // Brand Communication & Creatives 2
       // ----------------------------------------
 
       case 7:
@@ -730,10 +856,25 @@ function set_pg_content(sectionName, slideId) {
       // Sales Motivation
       // ----------------------------------------
 
-      case 14:
+
+      case 133:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide9/slideNew9.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Sales Motivation</p></div>  <div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div> <div class="title3" class="frameopen"><video src="slide15/video1.mp4" width="400" height="610" controls controlslist="nodownload"></video></div>';
+          '<link rel="stylesheet" type="text/css" href="slide133/slide133.css" media="screen"/>' +
+          '<div class="background">' +
+          '<img src="slide4/Slide4Bg.jpg" width="1024" height="768">' +
+          '</div>' +
+          '<div class="title1"><p>Sales Motivation</p></div>' +
+          '<div class="title2">' +
+          '<img src="slide4/DigiLateral Logo.png"/>' +
+          '</div>' +
+          '<div class="title3">' +
+          '<img src="slide133/1.png" alt="Slide 133"/>' +
+          '<video src="slide133/video.mp4" controls ' +
+          'playsinline preload="metadata" ' +
+          'controlsList="nodownload noplaybackrate"></video>' +
+          '</div>';
         break;
+
 
       // ----------------------------------------
       // Hum Mein Hai HEro -Humimab Hc
@@ -748,9 +889,22 @@ function set_pg_content(sectionName, slideId) {
       // Hum Mein Hai HEro -Humimab Hc
       // ----------------------------------------
 
-      case 16:
+      case 134:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide22/slide22.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Sales Motivation</p></div>  <div class="title2" class="frameopen"><img src="slide2/DigiLateral Logo.png"/></div> <div class="title3" class="frameopen"><video src="slide22/1.mp4" width="400" height="610" controls controlslist="nodownload"></video></div>';
+          '<link rel="stylesheet" type="text/css" href="slide134/slide134.css" media="screen"/>' +
+          '<div class="background">' +
+          '<img src="slide4/Slide4Bg.jpg" width="1024" height="768">' +
+          '</div>' +
+          '<div class="title1"><p>Sales Motivation</p></div>' +
+          '<div class="title2">' +
+          '<img src="slide4/DigiLateral Logo.png"/>' +
+          '</div>' +
+          '<div class="title3">' +
+          '<img src="slide134/1.png" alt="Slide 134"/>' +
+          '<video src="slide134/video.mp4" controls ' +
+          'playsinline preload="metadata" ' +
+          'controlsList="nodownload noplaybackrate"></video>' +
+          '</div>';
         break;
     }
   } else if (sectionName === "personalizedVideo") {
@@ -917,7 +1071,7 @@ function set_pg_content(sectionName, slideId) {
 
       case 40:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide38/slide38.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Retail Chemist Activities</p></div>  <div class="title2" class="frameopen"><img src="slide2/DigiLateral Logo.png"/></div> <div class="img1"><img src="slide38/Picture11.png" width="1024" height="768"></div><div class="img2"><img src="slide38/Picture12.png" width="1024" height="768"></div> <div class="title4"><h1>Chemist Activity - Schemes</h1></div>  <div class="title4" class="frameopen"><p class="para"><br><br>A single poster with a DYNAMIC QR code placed at chemist locations enables instant access to SUMO offers.<br><br>Chemists can scan the code to stay updated on exclusive deals and benefits.<br><br> A convenient and efficient way to enhance engagement and drive sales at the point of purchase.</p></div>';
+          '<link rel="stylesheet" type="text/css" href="slide38/slide38.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Retail Chemist Activities</p></div>  <div class="title2" class="frameopen"><img src="slide2/DigiLateral Logo.png"/></div> <div class="img1"><img src="slide38/Picture11.png" width="1024" height="768"></div><div class="img2"><img src="slide38/Picture12.png" width="1024" height="768"></div> <div class="title4"><h1>Chemist Activity - Schemes</h1></div>  <div class="title4" class="frameopen"><p class="para"><br><br>A single poster with a DYNAMIC QR code placed at chemist locations enables instant access to SUMO offers.<br><br>Chemists can scan the code to stay updated on exclusive deals and benefits.<br><br> A convenient and efficient way to enhance engagement and drive sales at the point of purchase.</p></div>';
         break;
     }
   } else if (sectionName === "productAdvertisement") {
@@ -954,29 +1108,81 @@ function set_pg_content(sectionName, slideId) {
         content =
           '<link rel="stylesheet" type="text/css" href="slide104/slide104.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>DocTalkQuiz</p></div><div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div><div class="title3" class="frameopen"><video src="slide104/video.mp4" width="800" height="450" controls controlslist="nodownload"></video></div>';
         break;
+      case 117:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide117/slide117.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>DocTalkQuiz</p></div><div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div><div class="title3" class="frameopen"><img src="slide117/1.png" alt="DocTalkQuiz slide"/></div>';
+        break;
     }
   } else if (sectionName === "calendarME") {
     switch (slideId) {
       case 105:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide105/slide105.css" media="screen"/><div class="calendarmE-page"><img src="slide105/1.png" alt="CalendarME Page 1"></div>';
+          '<link rel="stylesheet" type="text/css" href="slide105/slide105.css" media="screen"/>' +
+          '<div class="calendarME-presentation">' +
+          '<div class="calendarME-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<div class="calendarME-content-cover"></div>' +
+          '<div class="calendarmE-page"><img src="slide105/1.png" alt="CalendarME Page 1"></div>' +
+          '<div class="calendarME-title-text">CalendarME</div>' +
+          '<div class="calendarME-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          "</div>";
         break;
 
       case 106:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide106/slide106.css" media="screen"/><div class="calendarmE-page"><img src="slide106/1.png" alt="CalendarME Page 2"></div>';
+          '<link rel="stylesheet" type="text/css" href="slide106/slide106.css" media="screen"/>' +
+          '<div class="calendarME-presentation">' +
+          '<div class="calendarME-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<div class="calendarME-content-cover"></div>' +
+          '<div class="calendarmE-page"><img src="slide106/1.png" alt="CalendarME Page 2"></div>' +
+          '<div class="calendarME-title-text">CalendarME</div>' +
+          '<div class="calendarME-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          "</div>";
         break;
 
       case 107:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide107/slide107.css" media="screen"/><div class="calendarmE-page"><img src="slide107/1.png" alt="CalendarME Page 3"></div>';
+          '<link rel="stylesheet" type="text/css" href="slide107/slide107.css" media="screen"/>' +
+          '<div class="calendarME-presentation">' +
+          '<div class="calendarME-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<div class="calendarME-content-cover"></div>' +
+          '<div class="calendarmE-page"><img src="slide107/1.png" alt="CalendarME Page 3"></div>' +
+          '<div class="calendarME-title-text">CalendarME</div>' +
+          '<div class="calendarME-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          "</div>";
+        break;
+
+      case 127:
+      case 128:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="calendarME-presentation">' +
+          '<div class="calendarME-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<div class="calendarME-content-cover"></div>' +
+          '<div class="calendarmE-page"><img src="slide' +
+          slideId +
+          '/1.png" alt="CalendarME Page ' +
+          slideId +
+          '"></div>' +
+          '<div class="calendarME-title-text">CalendarME</div>' +
+          '<div class="calendarME-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          "</div>";
         break;
     }
   } else if (sectionName === "leaflets") {
     switch (slideId) {
       case 108:
         content =
-          '<link rel="stylesheet" type="text/css" href="slide108/slide108.css" media="screen"/><div class="calendarmE-page"><img src="slide108/1.png" alt="Leaflets"></div>';
+          '<link rel="stylesheet" type="text/css" href="slide108/slide108.css" media="screen"/>' +
+          '<div class="leaflets-presentation">' +
+          '<div class="leaflets-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<div class="calendarmE-page"><img src="slide108/1.png" alt="Leaflets"></div>' +
+          '<div class="leaflets-title-text">Leaflets</div>' +
+          '<div class="leaflets-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          "</div>";
         break;
     }
   } else if (sectionName === "comicBook") {
@@ -984,6 +1190,21 @@ function set_pg_content(sectionName, slideId) {
       case 109:
         content =
           '<link rel="stylesheet" type="text/css" href="slide109/slide109.css" media="screen"/><div class="calendarmE-page"><img src="slide109/1.png" alt="Comic Book"></div>';
+        break;
+
+      case 125:
+      case 126:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="calendarmE-page"><img src="slide' +
+          slideId +
+          '/1.png" alt="Comic Book ' +
+          slideId +
+          '"></div>';
         break;
     }
   } else if (sectionName === "games") {
@@ -1007,12 +1228,323 @@ function set_pg_content(sectionName, slideId) {
         content =
           '<link rel="stylesheet" type="text/css" href="slide27/slide27.css" media="screen"/><div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div><div class="title1" class="frameopen"><p>Games</p></div>  <div class="title2" class="frameopen"><img src="slide2/DigiLateral Logo.png"/></div> <div class="title3" class="frameopen"><video src="slide27/1.mp4" width="400" height="610" controls controlslist="nodownload"></video></div><div class="Bottomtitle"></div>';
         break;
+      case 138:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide138/slide138.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>Games</p></div>' +
+          '<div class="title2"><img src="slide2/DigiLateral Logo.png"/></div>' +
+          '<div class="title3"><video class="138video" src="slide138/video.mp4" controls controlsList="nodownload" playsinline preload="metadata"></video></div>' +
+          '<div class="Bottomtitle"></div>';
+        break;
+
+      case 139:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide139/slide139.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>Games</p></div>' +
+          '<div class="title2"><img src="slide2/DigiLateral Logo.png"/></div>' +
+          '<div class="title3"><video src="slide139/video.mp4" controls controlsList="nodownload" playsinline preload="metadata"></video></div>' +
+          '<div class="Bottomtitle"></div>';
+        break;
+    }
+  } else if (sectionName === "inClinicEngagement") {
+    switch (slideId) {
+      case 110:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide110/slide110.css" media="screen"/>' +
+          '<div class="in-clinic-engagement-page">' +
+          '<img src="slide110/1.png" alt="In-clinic Engagement">' +
+          "</div>";
+        break;
+
+      case 118:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide118/slide118.css" media="screen"/>' +
+          '<div class="in-clinic-slide118">' +
+          '<div class="slide118-background"><img src="slide4/Slide4Bg.jpg" alt=""/></div>' +
+          '<h1 class="slide118-heading">In-clinic Engagement</h1>' +
+          '<div class="slide118-logo"><img src="slide4/DigiLateral Logo.png" alt="DigiLateral"/></div>' +
+          '<div class="slide118-columns">' +
+          '<div class="slide118-image-panel"><img class="slide118-image" src="slide118/1.png" alt="In-clinic engagement image"/></div>' +
+          '<div class="slide118-video-panel"><video class="slide118-video" src="slide118/video-portrait.mp4" controls controlslist="nodownload" preload="metadata" playsinline></video></div>' +
+          "</div>" +
+          "</div>";
+        break;
+    }
+  } else if (sectionName === "activa") {
+    const activaBranding =
+      '<div class="activa-background">' +
+      '<img src="slide4/Slide4Bg.jpg" alt="" />' +
+      "</div>" +
+      '<div class="activa-title-text">ActiVa</div>' +
+      '<div class="activa-logo">' +
+      '<img src="slide4/DigiLateral Logo.png" alt="digiLATERAL" />' +
+      "</div>";
+
+    const activaMedia =
+      '<div class="activa-media ' +
+      (slideId === 116 ? "activa-video-media" : "activa-image-media") +
+      '">';
+
+    switch (slideId) {
+      case 111:
+      case 112:
+      case 113:
+      case 114:
+      case 115:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide116/slide116.css" media="screen"/>' +
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="activa-presentation">' +
+          activaBranding +
+          activaMedia +
+          '<img src="slide' +
+          slideId +
+          '/1.png" alt="ActiVa slide ' +
+          (slideId - 110) +
+          '">' +
+          "</div>" +
+          "</div>";
+        break;
+
+      case 116:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide116/slide116.css" media="screen"/>' +
+          '<div class="activa-presentation">' +
+          activaBranding +
+          activaMedia +
+          '<video src="slide116/video.mp4" controls playsinline preload="metadata" controlslist="nodownload">' +
+          "Your browser does not support the video tag." +
+          "</video>" +
+          "</div>" +
+          "</div>";
+        break;
     }
   }
+  // ==========================================
+  // NEW SECTIONS
+  // ==========================================
+  else if (sectionName === "medAssist") {
+    switch (slideId) {
+      case 130:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide130/slide130.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1" class="frameopen"><p>MedAssist</p></div>' +
+          '<div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3" class="frameopen"><img src="slide130/1.png" alt="MedAssist"/></div>';
+        break;
+    }
+  } else if (sectionName === "eDetailer") {
+    switch (slideId) {
+      case 136:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide136/slide136.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>E-Detailer</p></div>' +
+          '<div class="title2"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3 eDetailerArtwork">' +
+          '<img class="eDetailerBaseImage" src="slide136/1.png" alt="E-Detailer artwork"/>' +
+          '<video class="eDetailerVideo" controls controlsList="nodownload noplaybackrate" disablePictureInPicture playsinline preload="metadata">' +
+          '<source src="slide136/video.mp4" type="video/mp4">' +
+          '</video>' +
+          '</div>';
+        break;
+      case 135:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1" class="frameopen"><p>E-Detailer</p></div>' +
+          '<div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3" class="frameopen"><img src="slide' +
+          slideId +
+          '/1.png" alt="E-Detailer ' +
+          slideId +
+          '"/></div>';
+        break;
+    }
+  }
+  else if (sectionName === "aiStudio") {
+    switch (slideId) {
+      case 131:
+        // Slide 131 remains unchanged
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide131/slide131.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1" class="frameopen"><p>AI Studio</p></div>' +
+          '<div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3" class="frameopen"><img src="slide131/1.png" alt="AI Studio 131"/></div>';
+        break;
 
+
+      case 132:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide132/slide132.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>AI Studio</p></div>' +
+          '<div class="title2"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3"><img src="slide132/1.png" alt="AI Studio 132"/></div>' +
+          '<div class="aiStudioVideo">' +
+          '<video src="slide132/video.mp4" controls ' +
+          'controlsList="nodownload noplaybackrate" ' +
+          'disablePictureInPicture playsinline preload="metadata"></video>' +
+          '</div>';
+        break;
+
+
+    }
+  }
+  else if (sectionName === "iCreate") {
+    switch (slideId) {
+
+      case 140:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide140/slide140.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>I-Create</p></div>' +
+          '<div class="title2"><img src="slide4/DigiLateral Logo.png"/></div>' +
+
+          '<div class="title3"><img src="slide140/1.png" alt="I-Create"/></div>' +
+
+          '<div class="iCreateVideos">' +
+          '<video class="iCreateVideo video1" src="slide140/video1.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '<video class="iCreateVideo video2" src="slide140/video2.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '<video class="iCreateVideo video3" src="slide140/video3.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '</div>';
+        break;
+
+
+      case 141:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide141/slide141.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1"><p>I-Create</p></div>' +
+          '<div class="title2"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3"><img src="slide141/1.png" alt="I-Create"/></div>' +
+          '<div class="iCreateVideos">' +
+          '<video class="iCreateVideo video1" src="slide141/video1.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '<video class="iCreateVideo video2" src="slide141/video2.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '<video class="iCreateVideo video3" src="slide141/video3.mp4" controls controlsList="nodownload noplaybackrate" playsinline preload="metadata"></video>' +
+          '</div>';
+        break;
+
+      case 142:
+        content =
+          '<link rel="stylesheet" type="text/css" href="slide' +
+          slideId +
+          "/slide" +
+          slideId +
+          '.css" media="screen"/>' +
+          '<div class="background"><img src="slide4/Slide4Bg.jpg" width="1024" height="768"></div>' +
+          '<div class="title1" class="frameopen"><p>I-Create</p></div>' +
+          '<div class="title2" class="frameopen"><img src="slide4/DigiLateral Logo.png"/></div>' +
+          '<div class="title3" class="frameopen"><img src="slide' +
+          slideId +
+          '/1.png" alt="I-Create ' +
+          slideId +
+          '"/></div>';
+        break;
+    }
+  } else if (sectionName === "demo") {
+    // Demo delegates to the actual section for overlapping slides
+    var demoSectionMap = {
+      119: "introduction",
+      120: "introduction",
+      121: "introduction",
+      122: "introduction",
+      123: "introduction",
+      124: "introduction",
+      125: "comicBook",
+      126: "comicBook",
+      127: "calendarME",
+      128: "calendarME",
+      130: "medAssist",
+      131: "aiStudio",
+      132: "aiStudio",
+      135: "eDetailer",
+      136: "eDetailer",
+      140: "iCreate",
+      141: "iCreate",
+    };
+
+    // Delegate slides that already have dedicated renderers
+    if (demoSectionMap[slideId]) {
+      return set_pg_content(demoSectionMap[slideId], slideId);
+    }
+
+    // Dedicated renderers for demo slides 133, 134, and 137
+    if ([133, 134, 137].includes(Number(slideId))) {
+      var demoSlideId = Number(slideId);
+
+      content =
+        '<link rel="stylesheet" type="text/css" href="slide' +
+        demoSlideId +
+        '/slide' +
+        demoSlideId +
+        '.css" media="screen"/>' +
+
+        '<div class="background">' +
+        '<img src="slide4/Slide4Bg.jpg" width="1024" height="768">' +
+        '</div>' +
+
+        '<div class="title1"><p>Demo</p></div>' +
+
+        '<div class="title2">' +
+        '<img src="slide4/DigiLateral Logo.png"/>' +
+        '</div>' +
+
+        '<div class="title3">' +
+        '<img src="slide' +
+        demoSlideId +
+        '/1.png" alt="Demo slide ' +
+        demoSlideId +
+        '"/>' +
+
+        '<video src="slide' +
+        demoSlideId +
+        '/video.mp4" controls ' +
+        'playsinline preload="metadata" ' +
+        'controlsList="nodownload noplaybackrate"></video>' +
+        '</div>';
+    } else {
+      // Generic fallback for other demo-only slides
+      content =
+        '<link rel="stylesheet" type="text/css" href="slide' +
+        slideId +
+        '/slide' +
+        slideId +
+        '.css" media="screen"/>' +
+
+        '<div class="background">' +
+        '<img src="slide4/Slide4Bg.jpg" width="1024" height="768">' +
+        '</div>' +
+
+        '<div class="title1 frameopen"><p>Demo</p></div>' +
+
+        '<div class="title2 frameopen">' +
+        '<img src="slide4/DigiLateral Logo.png"/>' +
+        '</div>' +
+
+        '<div class="title3 frameopen">' +
+        '<img src="slide' +
+        slideId +
+        '/1.png" alt="Demo slide ' +
+        slideId +
+        '"/>' +
+        '</div>';
+    }
+  }
   return content;
 }
-
 function showDiv() {
   document.getElementById("welcomeDiv").style.display = "block";
 }
@@ -1053,25 +1585,32 @@ function open_page(url, page_id) {
   };
 
   /* // alert(page_id);
-	//step 10:
-	if (typeof(localStorage.getItem("currentslide"))!='undefined'){
-		//to checked previous slide has god end time...
-		var slideid=localStorage.getItem("currentslide");
-		toCaptureTime(slideid);
-		
-	}
+  //step 10:
+  if (typeof(localStorage.getItem("currentslide"))!='undefined'){
+    //to checked previous slide has god end time...
+    var slideid=localStorage.getItem("currentslide");
+    toCaptureTime(slideid);
+  	
+  }
 	
-	// toCaptureTime(page_id);
-	 localStorage.setItem("currentslide",page_id);
-	 currentContentNSlide = currentContentId+"_"+contentName+"_"+page_id;
-	 localStorage.setItem("current",currentContentNSlide);
-	//step 10 ends here */
+  // toCaptureTime(page_id);
+   localStorage.setItem("currentslide",page_id);
+   currentContentNSlide = currentContentId+"_"+contentName+"_"+page_id;
+   localStorage.setItem("current",currentContentNSlide);
+  //step 10 ends here */
 
   $("#wrapper").attr("rel", page_id);
   var content = "";
   var pg_content = set_pg_content(currentSection, page_id);
 
-  $("#main_content").html(pg_content);
+  if (window.innerWidth <= 1024) {
+    $("#main_content").html(
+      '<div class="ppt-slide-canvas">' + pg_content + "</div>",
+    );
+    fitPresentationSlide();
+  } else {
+    $("#main_content").html(pg_content);
+  }
 
   if (page_id == 4) {
     $(".box2").click(function (event) {
@@ -1443,3 +1982,70 @@ function frameclose5() {
     $("#frameopeneded3").show();
   }, 100);
 }
+
+// ========================================
+// BASIC CONTENT PROTECTION
+// Deterrent only — not complete DevTools protection
+// ========================================
+(function () {
+  "use strict";
+
+  // Disable right-click context menu
+  document.addEventListener(
+    "contextmenu",
+    function (event) {
+      event.preventDefault();
+    },
+    true,
+  );
+
+  // Block common browser inspection shortcuts
+  document.addEventListener(
+    "keydown",
+    function (event) {
+      const key = event.key.toLowerCase();
+
+      const blocked =
+        key === "f12" ||
+        (event.ctrlKey && event.shiftKey && ["i", "j", "c"].includes(key)) ||
+        (event.ctrlKey && key === "u");
+
+      if (blocked) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    },
+    true,
+  );
+})();
+
+// Responsive scaling for the fixed 1024x768 presentation canvas.
+function fitPresentationSlide() {
+  var canvas = document.querySelector(".ppt-slide-canvas");
+  if (!canvas) return;
+
+  if (window.innerWidth > 1024) {
+    canvas.style.position = "";
+    canvas.style.width = "";
+    canvas.style.height = "";
+    canvas.style.left = "";
+    canvas.style.top = "";
+    canvas.style.transform = "";
+    return;
+  }
+
+  var scale = Math.min(window.innerWidth / 1024, window.innerHeight / 768);
+
+  canvas.style.position = "absolute";
+  canvas.style.width = "1024px";
+  canvas.style.height = "768px";
+  canvas.style.left = "50%";
+  canvas.style.top = "50%";
+  canvas.style.transformOrigin = "center center";
+  canvas.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+}
+
+window.addEventListener("resize", fitPresentationSlide);
+window.addEventListener("orientationchange", function () {
+  window.setTimeout(fitPresentationSlide, 250);
+});
